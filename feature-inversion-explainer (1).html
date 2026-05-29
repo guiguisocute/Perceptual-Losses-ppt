@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>特征反演 · 「最小化特征重建损失」到底是什么</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer>
+  document.addEventListener("DOMContentLoaded", function(){
+    if (window.renderMathInElement){
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left:"$$", right:"$$", display:true},
+          {left:"$",  right:"$",  display:false}
+        ],
+        throwOnError:false
+      });
+    }
+  });
+</script>
+<style>
+  :root{
+    --paper:#F6F1E7; --paper-2:#EFE8D9;
+    --ink:#23201A; --ink-soft:#4A453B; --ink-faint:#7C7565; --line:#D8CFBC;
+    --mv:#6B5DD3; --mv-bg:#ECE9FB;
+    --gatys:#C0532A; --gatys-bg:#F7E7DD;
+    --db:#1E8268; --db-bg:#E1F0EA;
+    --john:#1C5C96; --john-bg:#E2EDF7;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);font-family:"Noto Serif SC",serif;
+    line-height:1.85;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:radial-gradient(var(--line) 0.5px,transparent 0.5px);background-size:22px 22px;opacity:.35}
+  .wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 28px}
+
+  header{padding:88px 0 52px;border-bottom:1.5px solid var(--ink)}
+  .kicker{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--ink-faint);margin-bottom:26px;display:flex;align-items:center;gap:14px}
+  .kicker::after{content:"";flex:1;height:1px;background:var(--line)}
+  h1{font-weight:700;font-size:clamp(36px,6vw,60px);line-height:1.14;letter-spacing:-.01em;margin-bottom:24px}
+  h1 em{font-family:"Fraunces",serif;font-style:italic;font-weight:400;color:var(--mv)}
+  .lede{font-size:clamp(17px,2.3vw,20px);color:var(--ink-soft);max-width:640px}
+  .lede b{color:var(--ink);font-weight:600}
+  .quote{margin-top:30px;padding:16px 20px;border-left:4px solid var(--mv);background:var(--mv-bg);
+    font-size:14px;color:var(--ink-soft);font-style:italic;border-radius:0 6px 6px 0}
+
+  section{padding:58px 0;border-bottom:1px solid var(--line)}
+  .sec-num{font-family:"Fraunces",serif;font-size:14px;color:var(--ink-faint);letter-spacing:.05em;margin-bottom:14px}
+  h2{font-weight:600;font-size:clamp(25px,3.8vw,34px);line-height:1.25;margin-bottom:20px;letter-spacing:-.01em}
+  h2 em{font-family:"Fraunces",serif;font-style:italic;font-weight:400}
+  p{font-size:16.5px;color:var(--ink-soft);margin-bottom:18px}
+  p b,strong{color:var(--ink);font-weight:600}
+  .mono{font-family:"JetBrains Mono",monospace;font-size:.9em;background:var(--paper-2);padding:1px 7px;border-radius:4px;color:var(--ink)}
+
+  .dirs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:26px}
+  .dir{border:1.5px solid var(--ink);border-radius:6px;padding:20px}
+  .dir .dt{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px}
+  .dir h3{font-size:18px;font-weight:600;margin-bottom:8px}
+  .dir .chain{font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--ink);background:var(--paper-2);padding:10px 12px;border-radius:5px;margin-bottom:10px}
+  .dir p{font-size:14px;margin-bottom:0}
+  .dir.fwd{box-shadow:5px 5px 0 var(--db-bg)}
+  .dir.inv{box-shadow:5px 5px 0 var(--mv-bg)}
+
+  .fig{margin:28px 0;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:24px 16px 12px}
+  .fig svg{display:block;width:100%;height:auto}
+  .fig svg text{font-family:"Noto Serif SC",serif}
+  .fig .t{font-size:14px;fill:var(--ink)}
+  .fig .ts{font-size:12px;fill:var(--ink-soft)}
+  .fig .th{font-size:14px;font-weight:500;fill:var(--ink)}
+  .fig .mn{font-family:"JetBrains Mono",monospace;font-size:12.5px;fill:var(--ink)}
+  .fig figcaption{font-size:13px;color:var(--ink-faint);text-align:center;margin-top:12px;line-height:1.5}
+
+  .steps{counter-reset:s;margin-top:24px}
+  .step{display:grid;grid-template-columns:40px 1fr;gap:18px;padding:16px 0;border-top:1px solid var(--line)}
+  .step:first-child{border-top:none}
+  .step .n{counter-increment:s;font-family:"Fraunces",serif;font-size:30px;color:var(--mv);line-height:1}
+  .step .n::before{content:counter(s)}
+  .step .sb{font-size:15.5px;color:var(--ink-soft)}
+  .step .sb b{color:var(--ink)}
+
+  .formula{background:var(--paper-2);border:1px solid var(--line);border-left:4px solid var(--mv);border-radius:8px;
+    padding:22px 24px;margin:22px 0;text-align:center;position:relative}
+  .formula .flab{position:absolute;top:-11px;left:18px;background:var(--ink);color:var(--paper);
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.08em;padding:2px 11px;border-radius:20px}
+  .formula .eq{font-family:"JetBrains Mono",monospace;font-size:clamp(17px,3vw,22px);color:var(--ink);letter-spacing:.02em}
+  .formula .sub{font-size:13.5px;color:var(--ink-faint);margin-top:12px;font-style:italic}
+  .katex{letter-spacing:normal}
+  .formula .eq .katex-display{margin:0}
+  .formula .eq .katex{font-size:1.05em}
+
+  .key{background:var(--ink);color:var(--paper);border-radius:10px;padding:38px 36px;margin-top:26px}
+  .key .kl{font-family:"Fraunces",serif;font-style:italic;font-size:14px;color:#C9B98F;margin-bottom:14px}
+  .key h3{font-size:clamp(21px,3.2vw,28px);font-weight:600;line-height:1.4;margin-bottom:18px}
+  .key h3 u{text-decoration:none;color:#C9A8E8;border-bottom:2px dashed #C9A8E8;padding-bottom:1px}
+  .key p{color:#D9D2C2;font-size:15px;margin:0}
+  .key p b,.key p strong{color:inherit}
+  .key .vs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+  .key .vc{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:16px}
+  .key .vc .h{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.1em;color:#C9B98F;margin-bottom:8px}
+  .key .vc p{font-size:14px;color:#E8E2D4}
+  .key .vc.opt{border-color:#C9A8E8}
+
+  footer{padding:48px 0 80px}
+  footer .refs{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--ink-faint);line-height:2}
+  footer .sig{margin-top:24px;font-family:"Fraunces",serif;font-style:italic;font-size:15px;color:var(--ink-faint)}
+
+  .rv{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+  .rv.in{opacity:1;transform:none}
+  header .rv{transition-delay:calc(var(--i,0)*90ms)}
+  @media(max-width:680px){.dirs,.key .vs{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="kicker rv" style="--i:0">Feature Inversion · 特征反演</div>
+    <h1 class="rv" style="--i:1">已知特征，<br><em>反推</em>出图像</h1>
+    <p class="lede rv" style="--i:2">Mahendran &amp; Vedaldi 论文里那句「<b>by minimizing a feature reconstruction loss</b>」到底是什么方法？拆开看，其实是一个<b>只优化图像、不训练网络</b>的循环。</p>
+    <div class="quote rv" style="--i:3">“…invert features from convolutional networks by minimizing a feature reconstruction loss in order to understand the image information retained by different network layers…”</div>
+  </header>
+
+  <section>
+    <div class="sec-num rv">00 — 方向</div>
+    <h2 class="rv">先分清<em>正向</em>与<em>反向</em></h2>
+    <p class="rv">平时我们用网络都是「正向」：图片喂进去，得到特征。<b>反演（invert）就是把箭头掉过来</b>问一句——已知某层的特征，什么样的图像会产生它？能不能把图像还原回来？</p>
+    <div class="dirs">
+      <div class="dir fwd rv">
+        <div class="dt">Forward · 平时</div>
+        <h3>图像 → 特征</h3>
+        <div class="chain">x &nbsp;→&nbsp; VGG &nbsp;→&nbsp; φⱼ(x)</div>
+        <p>有现成的网络，一次前向就算出特征。简单。</p>
+      </div>
+      <div class="dir inv rv">
+        <div class="dt">Inverse · 反演</div>
+        <h3>特征 → 图像 ？</h3>
+        <div class="chain">φⱼ(x₀) &nbsp;→&nbsp; ？？？ &nbsp;→&nbsp; 图像</div>
+        <p>CNN 不可逆，没有现成的「逆函数」。于是改用<b>优化</b>去逼近。</p>
+      </div>
+    </div>
+    <p class="rv" style="margin-top:24px">为什么要费劲反演？因为反演结果能告诉你<b>这一层到底保留了原图多少信息</b>：能还原出清晰图 → 信息留得多；只能还原出模糊轮廓 → 这层把细节扔了。这正是 M&amp;V 的研究目的——理解网络。</p>
+  </section>
+
+  <section>
+    <div class="sec-num rv">01 — 方法</div>
+    <h2 class="rv">「最小化特征重建损失」<em>就是这个循环</em></h2>
+    <p class="rv">既然没有逆函数，就把它当成一个<b>优化问题</b>来解：随机起一张图，反复修改它的像素，直到它的特征和目标对上。下面这张图就是整个过程——注意那条<b>蓝色虚线</b>回到的是「图像」，不是网络。</p>
+
+    <figure class="fig rv">
+    <svg viewBox="0 0 680 396" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>特征反演的优化循环</title>
+    <desc>随机噪声图过冻结VGG得到特征，与原图特征比较得到特征重建损失，梯度回传只更新噪声图的像素，循环数百次直到收敛。</desc>
+    <defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+
+    <rect x="40" y="62" width="110" height="74" rx="8" fill="#ECE9FB" stroke="#6B5DD3" stroke-width="1.4"/>
+    <text class="th" x="95" y="90" text-anchor="middle" dominant-baseline="central">噪声图 x</text>
+    <text class="ts" x="95" y="110" text-anchor="middle" dominant-baseline="central" style="fill:#6B5DD3">↻ 被优化的对象</text>
+
+    <rect x="196" y="68" width="104" height="62" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="1" stroke-dasharray="5 4"/>
+    <text class="th" x="248" y="92" text-anchor="middle" dominant-baseline="central">冻结 VGG φ</text>
+    <text class="ts" x="248" y="110" text-anchor="middle" dominant-baseline="central">不更新</text>
+
+    <rect x="346" y="72" width="98" height="54" rx="8" fill="#E1F0EA" stroke="#1E8268" stroke-width="1"/>
+    <text class="mn" x="395" y="99" text-anchor="middle" dominant-baseline="central">φⱼ(x)</text>
+
+    <rect x="40" y="232" width="110" height="74" rx="8" fill="#EFE8D9" stroke="#B4B2A9" stroke-width="1"/>
+    <text class="th" x="95" y="262" text-anchor="middle" dominant-baseline="central">原图 x₀</text>
+    <text class="ts" x="95" y="282" text-anchor="middle" dominant-baseline="central">目标</text>
+
+    <rect x="196" y="238" width="104" height="62" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="1" stroke-dasharray="5 4"/>
+    <text class="th" x="248" y="262" text-anchor="middle" dominant-baseline="central">冻结 VGG φ</text>
+    <text class="ts" x="248" y="280" text-anchor="middle" dominant-baseline="central">（同一个）</text>
+
+    <rect x="346" y="242" width="98" height="54" rx="8" fill="#E1F0EA" stroke="#1E8268" stroke-width="1"/>
+    <text class="mn" x="395" y="263" text-anchor="middle" dominant-baseline="central">φⱼ(x₀)</text>
+    <text class="ts" x="395" y="320" text-anchor="middle" style="fill:#5F5E5A">只算一次，固定不动</text>
+
+    <rect x="488" y="142" width="152" height="84" rx="8" fill="#F7E7DD" stroke="#C0532A" stroke-width="1.2"/>
+    <text class="th" x="564" y="164" text-anchor="middle" dominant-baseline="central">特征重建损失</text>
+    <text class="mn" x="564" y="190" text-anchor="middle" dominant-baseline="central" style="font-size:12px">‖φⱼ(x)−φⱼ(x₀)‖²</text>
+    <text class="ts" x="564" y="210" text-anchor="middle" dominant-baseline="central">差距越小越好</text>
+
+    <line x1="150" y1="99" x2="196" y2="99" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ar)"/>
+    <line x1="300" y1="99" x2="346" y2="99" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ar)"/>
+    <line x1="150" y1="269" x2="196" y2="269" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ar)"/>
+    <line x1="300" y1="269" x2="346" y2="269" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ar)"/>
+    <path d="M444 99 L 466 99 L 466 162 L 488 162" fill="none" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ar)"/>
+    <path d="M444 269 L 466 269 L 466 206 L 488 206" fill="none" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ar)"/>
+
+    <path d="M488 184 L 24 184 L 24 99 L 40 99" fill="none" stroke="#6B5DD3" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#ar)"/>
+    <text class="th" x="250" y="176" text-anchor="middle" style="fill:#534AB7">梯度下降 · 只更新 x 的像素（VGG 全程不动）</text>
+
+    <text class="ts" x="95" y="150" text-anchor="middle" style="fill:#534AB7">↻ 重复数百次 → 收敛 = 反演结果</text>
+    </svg>
+    <figcaption>特征反演的优化循环：被梯度修改的是「噪声图 x 的像素」，网络始终冻结</figcaption>
+    </figure>
+
+    <div class="steps">
+      <div class="step rv"><div class="n"></div><div class="sb"><b>记下目标。</b>把原图 x₀ 送进 VGG，取出第 j 层特征 φⱼ(x₀)。这一步<b>只算一次</b>，之后固定不动，当作要对齐的「靶子」。</div></div>
+      <div class="step rv"><div class="n"></div><div class="sb"><b>随机起一张图。</b>初始化一张<b>纯噪声图 x</b>（像素全随机）。它就是接下来要被反复打磨的对象。</div></div>
+      <div class="step rv"><div class="n"></div><div class="sb"><b>算损失。</b>把 x 也送进同一个 VGG，得到 φⱼ(x)，再和靶子比，差距就是<b>特征重建损失</b>（见下式）。</div></div>
+      <div class="step rv"><div class="n"></div><div class="sb"><b>改像素。</b>对损失求梯度，用<b>梯度下降更新 x 的像素值</b>，让 φⱼ(x) 朝 φⱼ(x₀) 靠近一点点。</div></div>
+      <div class="step rv"><div class="n"></div><div class="sb"><b>循环。</b>重复 3–4 步几百次。当 x 的特征逼近靶子，这张被优化出来的 x 就是<b>反演结果</b>。</div></div>
+    </div>
+
+    <div class="formula rv">
+      <div class="flab">特征重建损失（+ 正则）</div>
+      <div class="eq">$$\ell \;=\; \lVert\,\phi_j(x) - \phi_j(x_0)\,\rVert^2 \;+\; \lambda \cdot R(x)$$</div>
+      <div class="sub">前一项：在特征空间对齐靶子；后一项 R(x)：正则（如总变差 TV），让结果别太花、太噪。</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-num rv">02 — 最易错的一点</div>
+    <h2 class="rv">优化的是<em>图像</em>，不是<em>网络</em></h2>
+    <p class="rv">这是整个方法最反直觉、也最该记牢的地方。我们平时说「训练」，改的是网络的权重；但在特征反演里，<b>网络（VGG）一个参数都不动</b>，梯度下降修改的对象是<b>那张图的像素本身</b>。</p>
+    <div class="key rv">
+      <div class="kl">The thing being optimized.</div>
+      <h3>梯度回传，最终落在 <u>像素</u> 上，而不是 <u>权重</u> 上。</h3>
+      <p>VGG 只是一把固定的「尺子」，负责把图像翻译成特征好做比较。真正被一点点雕出来的，是输入端那张图。所以反演没有「训练」出任何东西——它是对<b>单张图像</b>做的一次优化。</p>
+      <div class="vs">
+        <div class="vc"><div class="h">不变</div><p>VGG 的权重（冻结）<br>目标特征 φⱼ(x₀)（只算一次）</p></div>
+        <div class="vc opt"><div class="h">被优化</div><p>图像 x 的每一个像素<br>← 梯度下降反复修改</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-num rv">03 — 它揭示了什么</div>
+    <h2 class="rv">层越深，<em>越抽象</em></h2>
+    <p class="rv">在不同层做反演，还原出的图差别很大——这正是 M&amp;V 想看的「不同层保留了什么信息」：</p>
+
+    <figure class="fig rv">
+    <svg viewBox="0 0 680 230" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>不同层反演结果的抽象程度</title>
+    <desc>浅层反演几乎完美还原细节，中层保留大致结构，深层只剩语义和布局、精确像素丢失。</desc>
+    <defs><marker id="ax" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+
+    <text class="th" x="100" y="26" text-anchor="middle">浅层 relu1</text>
+    <rect x="50" y="36" width="100" height="100" rx="4" fill="#fff" stroke="#1E8268" stroke-width="1"/>
+    <g fill="#1E8268" opacity="0.85">
+    <rect x="58" y="44" width="18" height="18"/><rect x="82" y="44" width="18" height="18"/><rect x="106" y="44" width="18" height="18"/><rect x="124" y="44" width="18" height="18"/>
+    <rect x="58" y="68" width="18" height="18"/><rect x="82" y="68" width="18" height="18"/><rect x="106" y="68" width="18" height="18"/><rect x="124" y="68" width="18" height="18"/>
+    <rect x="58" y="92" width="18" height="18"/><rect x="82" y="92" width="18" height="18"/><rect x="106" y="92" width="18" height="18"/><rect x="124" y="92" width="18" height="18"/>
+    <rect x="58" y="110" width="18" height="18"/><rect x="82" y="110" width="18" height="18"/><rect x="106" y="110" width="18" height="18"/><rect x="124" y="110" width="18" height="18"/>
+    </g>
+    <text class="ts" x="100" y="158" text-anchor="middle">几乎完美还原</text>
+    <text class="ts" x="100" y="176" text-anchor="middle" style="fill:#5F5E5A">颜色 / 纹理 / 位置都在</text>
+
+    <text class="th" x="290" y="26" text-anchor="middle">中层 relu2–3</text>
+    <rect x="240" y="36" width="100" height="100" rx="4" fill="#fff" stroke="#6B5DD3" stroke-width="1"/>
+    <g fill="#6B5DD3" opacity="0.7">
+    <rect x="252" y="50" width="30" height="30" rx="4"/><rect x="296" y="58" width="34" height="26" rx="4"/>
+    <rect x="258" y="94" width="26" height="28" rx="4"/><rect x="298" y="96" width="30" height="26" rx="4"/>
+    </g>
+    <text class="ts" x="290" y="158" text-anchor="middle">大致结构在</text>
+    <text class="ts" x="290" y="176" text-anchor="middle" style="fill:#5F5E5A">细节开始模糊</text>
+
+    <text class="th" x="480" y="26" text-anchor="middle">深层 relu4–5</text>
+    <rect x="430" y="36" width="100" height="100" rx="4" fill="#fff" stroke="#C0532A" stroke-width="1"/>
+    <g fill="#C0532A" opacity="0.55">
+    <ellipse cx="470" cy="68" rx="26" ry="20"/><ellipse cx="498" cy="104" rx="22" ry="18"/>
+    </g>
+    <text class="ts" x="480" y="158" text-anchor="middle">只剩语义 / 布局</text>
+    <text class="ts" x="480" y="176" text-anchor="middle" style="fill:#5F5E5A">精确像素已丢失</text>
+
+    <line x1="50" y1="206" x2="630" y2="206" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ax)"/>
+    <text class="ts" x="340" y="198" text-anchor="middle" style="fill:#5F5E5A">层越深 → 保留的精确空间信息越少，表示越抽象</text>
+    </svg>
+    <figcaption>示意图（非真实重建）：越往深层，反演越只剩「是什么」，丢掉「具体长什么样」</figcaption>
+    </figure>
+
+    <p class="rv">这个现象本身就是<b>感知损失能成立的根基</b>：高层特征「记得内容、忘了像素」，所以拿它当内容损失，能要求「内容像」却不强求「像素一模一样」——这正是后来 Gatys、Johnson 想要的性质。</p>
+  </section>
+
+  <section>
+    <div class="sec-num rv">04 — Gatys 怎么用它</div>
+    <h2 class="rv">同一个循环，<em>加一个风格损失</em></h2>
+    <p class="rv">Gatys 的风格迁移，<b>沿用的就是上面 M&amp;V 那个「优化图像」的循环</b>——图像 → VGG → 算损失 → 梯度改像素 → 再来一遍。唯一的改动是：损失从<b>一个</b>变成<b>两个</b>，靶子从<b>一张图</b>变成<b>两张</b>（一张定内容、一张定风格）。</p>
+
+    <figure class="fig rv">
+    <svg viewBox="0 0 700 512" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>Gatys 风格迁移（更精确版）</title>
+    <desc>上半区准备靶子只算一次：内容图和风格图各过同一个冻结VGG得到内容靶（单层）和风格靶（多层Gram），算完即固定。下半区优化循环：生成图反复过同一个VGG，内容损失对齐内容靶、风格损失对齐风格靶，求和成总损失，梯度只更新生成图像素。两处VGG是同一个网络。</desc>
+    <defs><marker id="ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+
+    <rect x="24" y="28" width="652" height="150" rx="12" fill="none" stroke="#C9C2B0" stroke-width="1" stroke-dasharray="6 5"/>
+    <text class="th" x="40" y="48" style="fill:#8A8270">① 准备靶子 · 整个过程只算一次（之后固定不动）</text>
+
+    <rect x="44" y="60" width="96" height="46" rx="8" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="1"/>
+    <text class="th" x="92" y="76" text-anchor="middle" dominant-baseline="central">内容图 x_c</text>
+    <text class="ts" x="92" y="94" text-anchor="middle" dominant-baseline="central">定内容/布局</text>
+    <rect x="44" y="116" width="96" height="46" rx="8" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="1"/>
+    <text class="th" x="92" y="132" text-anchor="middle" dominant-baseline="central">风格图 x_s</text>
+    <text class="ts" x="92" y="150" text-anchor="middle" dominant-baseline="central">定纹理/色调</text>
+
+    <rect x="198" y="78" width="94" height="60" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="1" stroke-dasharray="5 4"/>
+    <text class="th" x="245" y="100" text-anchor="middle" dominant-baseline="central">冻结 VGG</text>
+    <text class="ts" x="245" y="118" text-anchor="middle" dominant-baseline="central">同一个网络</text>
+
+    <rect x="330" y="56" width="172" height="46" rx="8" fill="#E2EDF7" stroke="#1C5C96" stroke-width="1"/>
+    <text class="th" x="416" y="72" text-anchor="middle" dominant-baseline="central">内容靶 φ_L(x_c)</text>
+    <text class="ts" x="416" y="90" text-anchor="middle" dominant-baseline="central">单层（高层 conv4_2）</text>
+    <rect x="330" y="112" width="172" height="50" rx="8" fill="#E2EDF7" stroke="#1C5C96" stroke-width="1"/>
+    <text class="th" x="416" y="129" text-anchor="middle" dominant-baseline="central">风格靶 Gram_l(x_s)</text>
+    <text class="ts" x="416" y="147" text-anchor="middle" dominant-baseline="central">多层 conv1_1–conv5_1</text>
+
+    <rect x="520" y="86" width="146" height="48" rx="8" fill="#FAEEDA" stroke="#BA7517" stroke-width="1"/>
+    <text class="th" x="593" y="104" text-anchor="middle" dominant-baseline="central" style="fill:#7A4D0F">算一次 → 固定</text>
+    <text class="ts" x="593" y="122" text-anchor="middle" dominant-baseline="central" style="fill:#7A4D0F">循环里不再变</text>
+
+    <line x1="140" y1="83" x2="198" y2="98" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ag)"/>
+    <line x1="140" y1="139" x2="198" y2="120" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ag)"/>
+    <line x1="292" y1="98" x2="330" y2="78" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ag)"/>
+    <line x1="292" y1="120" x2="330" y2="136" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ag)"/>
+    <line x1="502" y1="79" x2="520" y2="100" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ag)"/>
+    <line x1="502" y1="137" x2="520" y2="116" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ag)"/>
+
+    <rect x="24" y="196" width="652" height="304" rx="12" fill="none" stroke="#C9C2B0" stroke-width="1" stroke-dasharray="6 5"/>
+    <text class="th" x="40" y="216" style="fill:#8A8270">② 优化循环 · 重复数百次（每一步都重跑同一个 VGG）</text>
+
+    <rect x="44" y="330" width="106" height="66" rx="8" fill="#ECE9FB" stroke="#6B5DD3" stroke-width="1.4"/>
+    <text class="th" x="97" y="348" text-anchor="middle" dominant-baseline="central">生成图 x̂</text>
+    <text class="ts" x="97" y="366" text-anchor="middle" dominant-baseline="central" style="fill:#6B5DD3">↻ 唯一被优化</text>
+    <text class="ts" x="97" y="383" text-anchor="middle" dominant-baseline="central">初始 = 噪声</text>
+
+    <rect x="198" y="332" width="94" height="62" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="1" stroke-dasharray="5 4"/>
+    <text class="th" x="245" y="354" text-anchor="middle" dominant-baseline="central">同一个 VGG</text>
+    <text class="ts" x="245" y="372" text-anchor="middle" dominant-baseline="central">（每步都跑）</text>
+
+    <rect x="408" y="244" width="184" height="56" rx="8" fill="#F7E7DD" stroke="#C0532A" stroke-width="1.2"/>
+    <text class="th" x="500" y="263" text-anchor="middle" dominant-baseline="central">内容损失 ℓc</text>
+    <text class="ts" x="500" y="282" text-anchor="middle" dominant-baseline="central">φ_L(x̂) 对齐 内容靶 · 单层</text>
+    <rect x="408" y="398" width="184" height="56" rx="8" fill="#F7E7DD" stroke="#C0532A" stroke-width="1.2"/>
+    <text class="th" x="500" y="417" text-anchor="middle" dominant-baseline="central">风格损失 ℓs</text>
+    <text class="ts" x="500" y="436" text-anchor="middle" dominant-baseline="central">Gram(x̂) 对齐 风格靶 · 多层和</text>
+
+    <rect x="602" y="320" width="74" height="58" rx="8" fill="#FAEEDA" stroke="#BA7517" stroke-width="1"/>
+    <text class="th" x="639" y="342" text-anchor="middle" dominant-baseline="central" style="fill:#7A4D0F">总损失</text>
+    <text class="ts" x="639" y="360" text-anchor="middle" dominant-baseline="central" style="fill:#7A4D0F">α·ℓc+β·ℓs</text>
+
+    <line x1="150" y1="363" x2="198" y2="363" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ag)"/>
+    <line x1="292" y1="352" x2="408" y2="272" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ag)"/>
+    <line x1="292" y1="374" x2="408" y2="426" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ag)"/>
+    <line x1="592" y1="272" x2="602" y2="338" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ag)"/>
+    <line x1="592" y1="426" x2="602" y2="360" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ag)"/>
+
+    <path d="M602 360 L 614 360 L 614 478 L 36 478 L 36 363 L 44 363" fill="none" stroke="#6B5DD3" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#ag)"/>
+    <text class="ts" x="330" y="470" text-anchor="middle" style="fill:#534AB7">梯度 · 只更新生成图 x̂ 的像素（靶子全程不动）</text>
+
+    <line x1="245" y1="138" x2="245" y2="332" stroke="#1E8268" stroke-width="1.4" stroke-dasharray="4 4"/>
+    <rect x="300" y="222" width="120" height="26" rx="13" fill="#E1F0EA" stroke="#1E8268" stroke-width="0.8"/>
+    <text class="ts" x="360" y="235" text-anchor="middle" dominant-baseline="central" style="fill:#0F6E56">＝ 同一个网络</text>
+    </svg>
+    <figcaption>图 · Gatys（更精确版）：靶子只算一次后固定，循环里只重跑生成图；内容=单层、风格=多层 Gram；两处 VGG 是同一个网络</figcaption>
+    </figure>
+
+    <p class="rv">内容损失就是 M&amp;V 的特征重建损失（保证「画的还是那张照片」）；风格损失比较 <b>Gram 矩阵</b>（保证「笔触、色调像那幅名画」）。两者加权求和，把画布 x 同时往「内容 A + 风格 B」拉。代价和 M&amp;V 完全一样——<b>每张图都要现场迭代，慢</b>。</p>
+  </section>
+
+  <section>
+    <div class="sec-num rv">05 — Dosovitskiy &amp; Brox 怎么提速</div>
+    <h2 class="rv">把「慢循环」<em>换成一个网络</em></h2>
+    <p class="rv">M&amp;V 和 Gatys 的痛点是同一个：<b>每张图都要从头跑几百步优化</b>。Dosovitskiy &amp; Brox 的想法很直接——<b>训练一个前馈网络，让它一步就把特征还原成图像</b>，不再逐图优化。</p>
+
+    <figure class="fig rv">
+    <svg viewBox="0 0 680 372" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>Dosovitskiy和Brox用前馈网络替代逐图优化</title>
+    <desc>对比：老办法把特征通过数百步迭代优化还原成图像很慢；D&B训练一个解码网络一次前向就还原，很快，但训练时用的是逐像素损失。</desc>
+    <defs><marker id="ad" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+
+    <text class="th" x="40" y="36" style="fill:#6B5DD3">① 老办法：逐图优化（M&amp;V、Gatys）</text>
+    <rect x="40" y="56" width="86" height="50" rx="8" fill="#E1F0EA" stroke="#1E8268" stroke-width="1"/>
+    <text class="mn" x="83" y="81" text-anchor="middle" dominant-baseline="central">特征 φ</text>
+    <rect x="190" y="48" width="176" height="66" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="1" stroke-dasharray="5 4"/>
+    <text class="th" x="278" y="72" text-anchor="middle" dominant-baseline="central">逐图优化 ↻</text>
+    <text class="ts" x="278" y="92" text-anchor="middle" dominant-baseline="central">梯度改像素 · 数百次</text>
+    <rect x="444" y="56" width="86" height="50" rx="8" fill="#EFE8D9" stroke="#B4B2A9" stroke-width="1"/>
+    <text class="th" x="487" y="81" text-anchor="middle" dominant-baseline="central">图像</text>
+    <rect x="548" y="58" width="92" height="46" rx="8" fill="#F7E7DD" stroke="#C0532A" stroke-width="1"/>
+    <text class="th" x="594" y="76" text-anchor="middle" dominant-baseline="central" style="fill:#C0532A">慢</text>
+    <text class="ts" x="594" y="94" text-anchor="middle" dominant-baseline="central" style="fill:#C0532A">每张图重来</text>
+    <line x1="126" y1="81" x2="190" y2="81" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ad)"/>
+    <line x1="366" y1="81" x2="444" y2="81" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ad)"/>
+
+    <line x1="40" y1="150" x2="640" y2="150" stroke="#D8CFBC" stroke-width="0.5"/>
+    <text class="ts" x="340" y="144" text-anchor="middle" style="fill:#1E8268">把慢循环 → 换成快网络</text>
+
+    <text class="th" x="40" y="190" style="fill:#1C5C96">② D&amp;B 新办法：训练一个网络一步到位</text>
+    <rect x="40" y="210" width="86" height="50" rx="8" fill="#E1F0EA" stroke="#1E8268" stroke-width="1"/>
+    <text class="mn" x="83" y="235" text-anchor="middle" dominant-baseline="central">特征 φ</text>
+    <rect x="190" y="202" width="176" height="66" rx="8" fill="#E2EDF7" stroke="#1C5C96" stroke-width="1.2"/>
+    <text class="th" x="278" y="226" text-anchor="middle" dominant-baseline="central">解码网络 up-conv</text>
+    <text class="ts" x="278" y="246" text-anchor="middle" dominant-baseline="central">训练好 · 一步到位</text>
+    <rect x="444" y="210" width="86" height="50" rx="8" fill="#EFE8D9" stroke="#B4B2A9" stroke-width="1"/>
+    <text class="th" x="487" y="235" text-anchor="middle" dominant-baseline="central">图像</text>
+    <rect x="548" y="212" width="92" height="46" rx="8" fill="#E1F0EA" stroke="#1E8268" stroke-width="1"/>
+    <text class="th" x="594" y="230" text-anchor="middle" dominant-baseline="central" style="fill:#1E8268">快</text>
+    <text class="ts" x="594" y="248" text-anchor="middle" dominant-baseline="central" style="fill:#1E8268">一次前向</text>
+    <line x1="126" y1="235" x2="190" y2="235" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ad)"/>
+    <line x1="366" y1="235" x2="444" y2="235" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ad)"/>
+
+    <rect x="40" y="300" width="600" height="58" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="1" stroke-dasharray="5 4"/>
+    <text class="ts" x="58" y="324">网络怎么学会的？在大量「图像 ↔ 特征」对上训练，</text>
+    <text class="ts" x="58" y="344">用 <tspan style="fill:#C0532A;font-weight:600">逐像素损失</tspan> 监督 —— 这正是 Johnson 接下来要换成「感知损失」的那一环。</text>
+    </svg>
+    <figcaption>图 · D&amp;B 用一个训练好的解码网络替代慢优化：快了，但训练损失仍是逐像素</figcaption>
+    </figure>
+
+    <p class="rv">那这个网络<b>到底拿什么当训练目标</b>？原文的目标函数(公式 3)很朴素：</p>
+
+    <div class="formula rv" style="border-left-color:var(--db)">
+      <div class="flab">D&amp;B 训练目标 · 逐像素 L2（原文公式 3）</div>
+      <div class="eq">$$\hat{w} \;=\; \arg\min_{w}\ \sum_i \big\lVert\,x_i - f(\phi_i,\, w)\,\big\rVert^2$$</div>
+      <div class="sub">网络输出 f(φᵢ) 与<strong>原图 xᵢ</strong> 的逐像素平方差。给定大量「图像 ↔ 特征」对 {xᵢ, φᵢ}，<strong>只训练解码网络 f 的权重 w</strong>（编码端/特征提取始终冻结，这也是它和自编码器的关键区别）。</div>
+    </div>
+
+    <p class="rv">注意它和 M&amp;V 的损失<b>比的东西不一样</b>：M&amp;V 在<b>特征空间</b>比 $\lVert\phi(x)-\phi(x_0)\rVert^2$，D&amp;B 却在<b>像素空间</b>比。为什么 D&amp;B 能、也愿意比像素？三层原因，从浅到深：</p>
+
+    <div class="steps">
+      <div class="step rv"><div class="n" style="color:var(--db)"></div><div class="sb"><b>它手里有「标准答案图」。</b>M&amp;V 反演时没有目标图、只有目标特征，<b>只能</b>在特征空间比；而 D&amp;B 是<b>监督训练</b>，先拿图 xᵢ 算出特征 φᵢ，天然就有了 (特征 → 原图) 的配对。原图既然在手边，最直接的监督就是「让网络输出尽量等于这张已知原图」。</div></div>
+      <div class="step rv"><div class="n" style="color:var(--db)"></div><div class="sb"><b>逐像素 MSE 的最优解恰好是「期望原像」。</b>这是原文特意点明的：最小化该损失，其最优解是条件期望 $\hat{f}(\phi_0) = \mathbb{E}[\,x \mid \phi=\phi_0\,]$，也就是<b>所有可能产生这个特征的自然图像的(加权)平均</b>。他们要回答「这个特征<i>平均</i>长什么样」，而逐像素 MSE 的数学最优解正好就是这张平均图——所以逐像素不是随便选的，是和研究目标精确对应的。</div></div>
+      <div class="step rv"><div class="n" style="color:var(--db)"></div><div class="sb"><b>模糊本身变得「有信息」。</b>因为最优解是平均图，重建的<b>模糊程度恰好对应表示的不变性</b>：层越高越不变(越多不同的图映射到同一特征)，平均出来就越糊。对「看每层保留了什么」这个目的来说，糊本身就是结论。</div></div>
+    </div>
+
+    <p class="rv">顺带一个对比能量化提速的来源：M&amp;V 测试时要对特征<b>求梯度做优化</b>，慢(GPU 上约 <b>6 秒/张</b>)，且无法用于 <span class="mono">LBP</span> 这类<b>不可微</b>的特征；D&amp;B 只在训练时贵，重建时一次前向约 <b>5 毫秒/张</b>——这就是约 <b>1000×</b> 提速的来源。</p>
+
+    <div class="key rv">
+      <div class="kl">Why it comes out blurry.</div>
+      <h3>逐像素 MSE 的最优解是 <u>期望原像</u> $\mathbb{E}[x \mid \phi]$——「所有可能原图的平均」，所以重建<u>天生偏糊</u>。</h3>
+      <p>这正是逐像素损失<b>抓不住感知相似性</b>的体现：它奖励「平均上对」，而非「看起来像」。D&amp;B 把「慢优化 → 快网络」这半步做完了，但损失停在逐像素；Johnson 接手时几乎<b>照搬了前馈结构</b>，关键只改一处——把逐像素损失换成<b>感知损失</b>。于是「为什么糊」和「为什么 Johnson 要改」是同一个答案。</p>
+    </div>
+
+    <p class="rv">速度换来了：测试时只需<b>一次前向</b>。但有个关键点——这个解码网络<b>训练时用的是逐像素损失</b>。「前馈替代慢优化」的点子有了，损失却没升级。<b>这一环，正是 Johnson 接下来要改的。</b></p>
+  </section>
+
+  <section style="border-bottom:none">
+    <div class="sec-num rv">06 — 集大成</div>
+    <h2 class="rv">三块拼起来，<em>就是 Johnson</em></h2>
+    <p class="rv">把这条线连起来就清楚了：特征重建损失 $\lVert\phi_j(x)-\phi_j(x_0)\rVert^2$ 从头到尾<b>没变过</b>——在 Johnson 的引用链里，它直接来自 M&amp;V [7]（用于反演 CNN 特征、理解网络层保留了什么信息）；Gatys 借它当内容损失、再加风格损失；D&amp;B 想到用前馈网络替代慢优化。它们和 Johnson 的根本分野，都落在一句话上：<b>梯度下降在改谁</b>。</p>
+    <div class="key rv" style="background:var(--paper-2);color:var(--ink)">
+      <div class="kl" style="color:var(--ink-faint)">Same loss, different target.</div>
+      <h3 style="color:var(--ink)">同一套损失，<u style="color:var(--mv);border-color:var(--mv)">优化图像</u> 还是 <u style="color:var(--john);border-color:var(--john)">优化网络</u>，分出两条路。</h3>
+      <div class="vs">
+        <div class="vc opt" style="background:var(--mv-bg);border-color:var(--mv)"><div class="h" style="color:var(--mv)">M&amp;V · Gatys</div><p style="color:var(--ink-soft)">优化<b>图像像素</b><br>每张图都要现场迭代 → 慢<br>用途：理解网络 / 风格迁移</p></div>
+        <div class="vc" style="background:var(--john-bg);border-color:var(--john)"><div class="h" style="color:var(--john)">D&amp;B · Johnson</div><p style="color:var(--ink-soft)">优化<b>网络权重</b><br>训练一次，推理只跑一遍 → 快<br>用途：一步还原 / 实时生成</p></div>
+      </div>
+    </div>
+    <p class="rv" style="margin-top:24px"><b>前馈这半边，D&amp;B 先做了</b>，但它训练用逐像素损失；<b>Johnson 的关键一步，是把损失换成感知损失</b>（内容来自 M&amp;V、风格来自 Gatys）——于是前馈的「快」配上感知损失的「质」，集大成。论文那句话，本质就是在给这套损失<b>上户口</b>：源头在 Mahendran &amp; Vedaldi（更早可追到 HOG、LBP 等手工特征的反演）。</p>
+  </section>
+
+  <footer>
+    <div class="refs rv">
+      [7] Mahendran &amp; Vedaldi. Understanding Deep Image Representations by Inverting Them. CVPR 2015.<br>
+      [24] HOG 特征反演 · [22,23] 局部二值描述子反演（更早的非 CNN 渊源）<br>
+      [本文] Johnson, Alahi, Fei-Fei. Perceptual Losses for Real-Time Style Transfer and Super-Resolution. ECCV 2016.
+    </div>
+    <div class="sig rv">反演 = 固定网络，优化图像 · 同一个损失，落点不同便分出两条路</div>
+  </footer>
+
+</div>
+<script>
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.1,rootMargin:"0px 0px -40px 0px"});
+  document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+  window.addEventListener('load',()=>{document.querySelectorAll('header .rv').forEach(el=>el.classList.add('in'))});
+</script>
+</body>
+</html>

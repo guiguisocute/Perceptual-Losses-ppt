@@ -352,72 +352,13 @@ table.deck tr.alt td.ours-best { background: #ffeef0; }
 
 <!-- ───────────────────────── Slide 3 — Image transformation tasks ───────────────────────── -->
 <section data-screen-label="03 图像变换任务">
-  <div class="slide-header">
-    <span class="num">03</span>
-    <span class="section-tag">PART 1 · 背景</span>
-    <h2 style="margin-left:14px;">图像变换任务 · 输入图 → 输出图的统一框架</h2>
+  <img src="uploads/slide03-replacement.png" alt="图像变换任务 · 输入图 → 输出图的统一框架" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; background:#fff;">
+  <div style="position:absolute; left:0; right:0; top:0; height:172px; background:linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.78) 58%, rgba(255,255,255,0) 100%); pointer-events:none;"></div>
+  <div style="position:absolute; left:64px; right:64px; top:42px; display:flex; align-items:center; gap:18px; color:var(--navy); text-shadow:0 1px 0 rgba(255,255,255,0.85);">
+    <span style="font-family:'JetBrains Mono',monospace; font-size:30px; color:var(--blue); letter-spacing:0.05em; font-weight:800;">03</span>
+    <span style="font-family:'JetBrains Mono',monospace; font-size:16px; color:var(--navy); background:rgba(219,234,254,0.92); border:1px solid rgba(59,130,196,0.32); padding:6px 16px; border-radius:100px; letter-spacing:0.08em; font-weight:800;">PART 1 · 背景</span>
+    <h2 style="margin-left:10px; font-family:'Noto Serif SC',serif; font-size:42px; font-weight:700; color:var(--navy); line-height:1.25;">图像变换任务 · 输入图 → 输出图的统一框架</h2>
   </div>
-  <div class="accent-rule"></div>
-
-  <div style="padding:30px 80px 0; display:flex; flex-direction:column; gap:22px;">
-
-    <div class="callout dark" style="padding:18px 26px;">
-      <div style="font-size:24px; line-height:1.55;">
-        许多经典视觉问题都可以抽象成同一个范式 — <strong style="color:#fde68a;">给定一张输入图，输出另一张图</strong>。本文把这个范式叫做 <strong style="color:#86efac;">image transformation task</strong>，并指出：尽管任务表面差异巨大，背后<strong>训练方法</strong>却被同一个问题困住。
-      </div>
-    </div>
-
-    <!-- Task grid -->
-    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:22px;">
-
-      <div class="figure-card" style="padding:22px 26px;">
-        <div class="tag warm" style="font-size:15px;">低层图像处理</div>
-        <ul class="bullet-list" style="margin-top:14px;">
-          <li><strong style="color:var(--accent-dk);">去噪</strong> · noisy → clean</li>
-          <li><strong style="color:var(--accent-dk);">超分</strong> · LR → HR</li>
-          <li><strong style="color:var(--accent-dk);">上色</strong> · gray → color</li>
-        </ul>
-        <div style="font-size:17px; color:var(--gray4); line-height:1.5; margin-top:14px; font-style:italic;">
-          特点：输入是<strong>退化版</strong>本身，输出几乎共享结构
-        </div>
-      </div>
-
-      <div class="figure-card" style="padding:22px 26px;">
-        <div class="tag" style="font-size:15px;">高层视觉理解</div>
-        <ul class="bullet-list" style="margin-top:14px;">
-          <li><strong style="color:var(--blue);">语义分割</strong> · color → label map</li>
-          <li><strong style="color:var(--blue);">深度估计</strong> · color → depth</li>
-          <li><strong style="color:var(--blue);">法线预测</strong> · color → normal</li>
-        </ul>
-        <div style="font-size:17px; color:var(--gray4); line-height:1.5; margin-top:14px; font-style:italic;">
-          特点：输入是原图，输出编码<strong>语义 / 几何</strong>信息
-        </div>
-      </div>
-
-      <div class="figure-card" style="padding:22px 26px;">
-        <div class="tag green" style="font-size:15px;">本文重点 ★</div>
-        <ul class="bullet-list" style="margin-top:14px;">
-          <li><strong style="color:var(--green);">风格迁移</strong> · content + style → 新图</li>
-          <li><strong style="color:var(--green);">×4 / ×8 超分</strong> · LR → HR（大放大比）</li>
-        </ul>
-        <div style="font-size:17px; color:var(--green); line-height:1.5; margin-top:14px; font-style:italic;">
-          共同点：都是<strong>病态(ill-posed)</strong>问题 — 一个输入对应无穷多合理输出，必须靠<strong>语义先验</strong>消歧
-        </div>
-      </div>
-
-    </div>
-
-    <div class="figure-card" style="padding:22px 28px;">
-      <div style="display:flex; align-items:center; gap:20px;">
-        <span class="tag purple" style="font-size:18px;">为什么这两个任务尤其难</span>
-        <div style="flex:1; font-size:21px; color:#334155; line-height:1.55;">
-          风格迁移没有"标准答案"；×4/×8 超分时大量细节在 LR 中<strong style="color:var(--rose);">压根不存在</strong>。两者都需要网络<strong style="color:var(--navy);">"理解图像内容"</strong>，而不只是做局部像素映射。
-        </div>
-      </div>
-    </div>
-
-  </div>
-  <div class="bottom-bar"></div>
 </section>
 
 <!-- ───────────────────────── Slide 4 — Two competing routes ───────────────────────── -->
@@ -425,28 +366,28 @@ table.deck tr.alt td.ours-best { background: #ffeef0; }
   <div class="slide-header">
     <span class="num">04</span>
     <span class="section-tag">PART 1 · 背景</span>
-    <h2 style="margin-left:14px;">两条路线的对峙 · 前馈"快"vs 优化"美"</h2>
+    <h2 style="margin-left:14px;">两条路线的对峙 · 前馈“快” vs 优化“美”</h2>
   </div>
   <div class="accent-rule"></div>
 
-  <div style="padding:26px 80px 0; display:flex; flex-direction:column; gap:18px;">
+  <div style="padding:20px 80px 0; display:flex; flex-direction:column; gap:14px;">
 
-    <div class="callout dark" style="padding:16px 24px;">
-      <div style="font-size:22px; line-height:1.55;">
-        2016 年以前，处理图像变换任务的人分成<strong style="color:#fde68a;">两个阵营</strong>。两边都有人做得很好，但<strong style="color:#fca5a5;">各自有一个致命短板</strong>。Perceptual Losses 这篇文章的工作，本质上是把这两条路线合并。
+    <div class="callout dark" style="padding:14px 24px;">
+      <div style="font-size:21px; line-height:1.5;">
+        2016 年以前，图像变换任务主要有<strong style="color:#fde68a;">两条路线</strong>：一边跑得快，一边看起来好。真正卡住的是：<strong style="color:#fca5a5;">快的路线不懂“人眼像不像”，美的路线慢到不能实时。</strong>
       </div>
     </div>
 
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:22px;">
 
       <!-- Route A: feed-forward + per-pixel -->
-      <div class="figure-card" style="padding:24px 28px; background:var(--blue-bg); border-color:var(--blue-pale); display:flex; flex-direction:column; gap:14px;">
+      <div class="figure-card" style="padding:18px 22px; background:var(--blue-bg); border-color:var(--blue-pale); display:flex; flex-direction:column; gap:10px;">
         <div>
           <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--blue); letter-spacing:0.12em; font-weight:800;">ROUTE A · 主流派</div>
-          <div style="font-family:'Noto Serif SC',serif; font-size:30px; color:var(--navy); font-weight:800; margin-top:6px; line-height:1.25;">前馈 CNN + 像素损失</div>
+          <div style="font-family:'Noto Serif SC',serif; font-size:29px; color:var(--navy); font-weight:800; margin-top:4px; line-height:1.22;">前馈 CNN + 像素损失</div>
         </div>
 
-        <div style="background:#fff; border-radius:8px; padding:14px 16px;">
+        <div style="background:#fff; border-radius:8px; padding:11px 16px;">
           <div style="display:flex; align-items:center; gap:10px; justify-content:center;">
             <div style="background:var(--blue-pale); color:var(--blue); padding:8px 14px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700;">x</div>
             <div style="color:var(--gray4);">→</div>
@@ -457,61 +398,111 @@ table.deck tr.alt td.ours-best { background: #ffeef0; }
           </div>
         </div>
 
-        <div style="font-size:18px; line-height:1.6; color:#1e3a5f;">
+        <div style="font-size:17px; line-height:1.55; color:#1e3a5f;">
           <strong style="color:var(--blue);">代表工作：</strong>SRCNN[Dong'14] 超分、Long[FCN]分割、Eigen 深度估计。<br>
           <strong style="color:var(--blue);">训练：</strong>per-pixel L2 / 分类损失。<br>
           <strong style="color:var(--blue);">推理：</strong>一次前向，毫秒级。
         </div>
 
-        <div style="background:#fff; border-radius:8px; padding:12px 16px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--green); letter-spacing:0.08em; font-weight:800; margin-bottom:4px;">✔ 优点</div>
+        <div style="background:#fff; border-radius:8px; padding:10px 16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--green); letter-spacing:0.08em; font-weight:800; margin-bottom:3px;">优点</div>
           <div style="font-size:17px; color:#14532d; line-height:1.5;">推理<strong>极快</strong> · 端到端可训练 · 易部署</div>
         </div>
 
         <div style="background:#fff; border-radius:8px; padding:12px 16px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--rose); letter-spacing:0.08em; font-weight:800; margin-bottom:4px;">✘ 致命短板</div>
-          <div style="font-size:17px; color:#7f1d1d; line-height:1.5;">per-pixel L2 <strong>无法刻画感知差异</strong> — 在病态任务上输出<strong>模糊、平均化</strong></div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--rose); letter-spacing:0.08em; font-weight:800; margin-bottom:6px;">致命短板 · 像素距离不等于感知距离</div>
+          <div style="display:grid; grid-template-columns:170px 1fr; gap:14px; align-items:center;">
+            <svg viewBox="0 0 170 82" style="width:170px; height:82px; display:block;">
+              <defs>
+                <pattern id="pxGridA" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M12 0H0V12" fill="none" stroke="#cbd5e1" stroke-width="1"/></pattern>
+                <pattern id="pxGridB" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M12 0H0V12" fill="none" stroke="#fecaca" stroke-width="1"/></pattern>
+                <marker id="arr4px" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#64748b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>
+              </defs>
+              <rect x="4" y="14" width="54" height="54" rx="5" fill="url(#pxGridA)" stroke="#94a3b8"/>
+              <rect x="28" y="38" width="12" height="12" fill="#2563eb"/>
+              <rect x="112" y="14" width="54" height="54" rx="5" fill="url(#pxGridB)" stroke="#ef4444"/>
+              <rect x="136" y="38" width="12" height="12" fill="#2563eb"/>
+              <path d="M66 42H100" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr4px)"/>
+              <text x="31" y="10" text-anchor="middle" font-size="10" fill="#64748b" font-family="JetBrains Mono">原图</text>
+              <text x="139" y="10" text-anchor="middle" font-size="10" fill="#7f1d1d" font-family="JetBrains Mono">右移 1px</text>
+              <text x="85" y="78" text-anchor="middle" font-size="10.5" fill="#7f1d1d" font-family="Noto Sans SC" font-weight="700">人眼近似，L2 很大</text>
+            </svg>
+            <div style="font-size:16px; color:#7f1d1d; line-height:1.5;">
+              只差一个像素，视觉几乎相同；逐点相减却会把大量位置都算错，网络倾向输出<strong>模糊、平均化</strong>的安全答案。
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Route B: optimization + perceptual -->
-      <div class="figure-card" style="padding:24px 28px; background:var(--accent-pale); border-color:#f0a060; display:flex; flex-direction:column; gap:14px;">
+      <div class="figure-card" style="padding:18px 22px; background:var(--accent-pale); border-color:#f0a060; display:flex; flex-direction:column; gap:10px;">
         <div>
           <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--accent-dk); letter-spacing:0.12em; font-weight:800;">ROUTE B · 优化派</div>
-          <div style="font-family:'Noto Serif SC',serif; font-size:30px; color:#7c2d12; font-weight:800; margin-top:6px; line-height:1.25;">迭代优化 + 感知损失</div>
+          <div style="font-family:'Noto Serif SC',serif; font-size:29px; color:#7c2d12; font-weight:800; margin-top:4px; line-height:1.22;">迭代优化 + 感知损失</div>
         </div>
 
-        <div style="background:#fff; border-radius:8px; padding:14px 16px;">
+        <div style="background:#fff; border-radius:8px; padding:11px 16px;">
           <div style="display:flex; align-items:center; gap:10px; justify-content:center;">
             <div style="background:var(--accent-pale); color:var(--accent-dk); padding:8px 14px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700;">noise ŷ</div>
             <div style="color:var(--gray4);">→</div>
             <div style="background:var(--accent-dk); color:#fff; padding:8px 18px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700;">VGG 提特征</div>
             <div style="color:var(--gray4);">→</div>
-            <div style="background:var(--accent-pale); color:var(--accent-dk); padding:8px 14px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700;">L-BFGS×500</div>
+            <div style="background:var(--accent-pale); color:var(--accent-dk); padding:8px 14px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700;">迭代数百次</div>
           </div>
         </div>
 
-        <div style="font-size:18px; line-height:1.6; color:#7c2d12;">
+        <div style="font-size:17px; line-height:1.55; color:#7c2d12;">
           <strong style="color:var(--accent-dk);">代表工作：</strong>Gatys[Style'15] 风格迁移、Mahendran[Inv'15] 特征反演、Simonyan 特征可视化。<br>
           <strong style="color:var(--accent-dk);">训练：</strong>无网络可训 — 每张图都跑一次<strong>优化问题</strong>。<br>
           <strong style="color:var(--accent-dk);">推理：</strong>分钟级。
         </div>
 
-        <div style="background:#fff; border-radius:8px; padding:12px 16px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--green); letter-spacing:0.08em; font-weight:800; margin-bottom:4px;">✔ 优点</div>
+        <div style="background:#fff; border-radius:8px; padding:10px 16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--green); letter-spacing:0.08em; font-weight:800; margin-bottom:3px;">优点</div>
           <div style="font-size:17px; color:#14532d; line-height:1.5;"><strong>感知质量高</strong> · 边缘 / 纹理 / 语义都对</div>
         </div>
 
         <div style="background:#fff; border-radius:8px; padding:12px 16px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--rose); letter-spacing:0.08em; font-weight:800; margin-bottom:4px;">✘ 致命短板</div>
-          <div style="font-size:17px; color:#7f1d1d; line-height:1.5;"><strong>慢得离谱</strong> · 每出一张 512² 图要 30s–1min · 实时 / 视频应用不可能</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--rose); letter-spacing:0.08em; font-weight:800; margin-bottom:6px;">致命短板 · 质量来自慢优化</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div style="background:#fff7ed; border:1px solid #fed7aa; border-radius:8px; padding:12px;">
+              <div style="font-family:'JetBrains Mono',monospace; font-size:24px; color:var(--accent-dk); font-weight:800;">100s</div>
+              <div style="font-size:15.5px; color:#7c2d12; line-height:1.45;">每张图反复更新像素，直到 VGG 特征匹配</div>
+            </div>
+            <div style="background:#fff1f2; border:1px solid #fecdd3; border-radius:8px; padding:12px;">
+              <div style="font-family:'JetBrains Mono',monospace; font-size:24px; color:var(--rose); font-weight:800;">not real-time</div>
+              <div style="font-size:15.5px; color:#7f1d1d; line-height:1.45;">实时交互、视频流、批量处理都难落地</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="callout warm" style="padding:14px 24px;">
-      <div style="font-size:20px; line-height:1.55;">
-        <strong style="color:var(--accent-dk);">合并思路（一句话）：</strong>用 Route A 的<strong>前馈网络架构</strong>（保留速度），但用 Route B 的<strong>感知损失</strong>来训练（保留质量）— 这就是本文方法的全部主线。
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:22px;">
+      <div class="figure-card" style="padding:12px 14px; background:#fff; border-color:var(--gray2);">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--blue); letter-spacing:0.1em; font-weight:800; margin-bottom:8px;">EVIDENCE A · 质量证据</div>
+        <div style="height:180px; border-radius:9px; overflow:hidden; border:1px solid var(--gray2); background:#fff;">
+          <img src="uploads/slide04-srcnn-perceptual.png" alt="SRCNN 与 Perceptual loss 视觉对比" style="width:100%; height:100%; object-fit:cover; object-position:50% 8%; display:block;">
+        </div>
+        <div style="font-size:15.5px; color:var(--text); line-height:1.45; margin-top:8px;">
+          SRCNN 更软、更平均；perceptual loss 保住皱褶、边界和纹理。
+        </div>
+      </div>
+
+      <div class="figure-card" style="padding:12px 14px; background:#fff; border-color:var(--gray2);">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent-dk); letter-spacing:0.1em; font-weight:800; margin-bottom:8px;">EVIDENCE B · 速度证据</div>
+        <div style="height:180px; border-radius:9px; overflow:hidden; border:1px solid var(--gray2); background:#fff; display:flex; align-items:center; justify-content:center;">
+          <img src="uploads/slide04-speed-table.png" alt="Table 1 速度对比" style="width:100%; height:100%; object-fit:contain; display:block;">
+        </div>
+        <div style="font-size:15.5px; color:var(--text); line-height:1.45; margin-top:8px;">
+          Table 1 直接给出数量级差距：本文一次前向比 Gatys 迭代优化快约 1000×。
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warm" style="padding:12px 24px;">
+      <div style="font-size:22px; line-height:1.45; text-align:center;">
+        <strong style="color:var(--accent-dk);">问题自然变成：</strong>能不能既要 Route A 的<strong>一次前向速度</strong>，又要 Route B 的<strong>感知质量</strong>？
       </div>
     </div>
 
@@ -519,183 +510,169 @@ table.deck tr.alt td.ours-best { background: #ffeef0; }
   <div class="bottom-bar"></div>
 </section>
 
-<!-- ───────────────────────── Slide 5 — Per-pixel loss is broken ───────────────────────── -->
-<section data-screen-label="05 per-pixel loss 的硬伤">
+<!-- ───────────────────────── Slide 5 — Related work timeline ───────────────────────── -->
+<section data-screen-label="05 Related Work 时间线">
   <div class="slide-header">
     <span class="num">05</span>
     <span class="section-tag">PART 1 · 背景</span>
-    <h2 style="margin-left:14px;">per-pixel loss 的硬伤 · 一像素偏移就翻车</h2>
+    <h2 style="margin-left:14px;">Related Work 时间线 · 先看三张图</h2>
   </div>
   <div class="accent-rule"></div>
 
-  <div style="padding:24px 80px 0; display:flex; flex-direction:column; gap:18px;">
+  <div style="padding:22px 54px 0; display:flex; flex-direction:column; gap:16px;">
 
-    <div class="callout dark" style="padding:16px 24px;">
-      <div style="font-size:22px; line-height:1.55;">
-        论文用一个极端但精准的<strong style="color:#fde68a;">反例</strong>戳穿 per-pixel loss：两张视觉上几乎一样的图，仅仅整体<strong>平移一个像素</strong>，<strong style="color:#fca5a5;">L2 损失就会爆炸</strong>。这说明 L2 衡量的根本不是"人看起来像不像"。
+    <div class="callout dark" style="padding:12px 22px;">
+      <div style="font-size:22px; line-height:1.36;">
+        Johnson 之前的 related work 可以按三张图读：<strong style="color:#bfdbfe;">先证明 VGG 特征能比较图像</strong>，再把 <strong style="color:#fbbf24;">内容/风格写成损失</strong>，最后借来 <strong style="color:#86efac;">前馈网络的加速思路</strong>。
       </div>
     </div>
 
-    <div style="display:grid; grid-template-columns:1.1fr 1fr; gap:24px;">
-
-      <!-- Left: 1-pixel shift illustration -->
-      <div class="figure-card" style="padding:22px 28px;">
-        <div class="tag" style="font-size:16px; margin-bottom:14px;">反例 · 1 像素位移</div>
-
-        <!-- Visual diagram of two near-identical images -->
-        <div style="display:flex; gap:24px; justify-content:center; align-items:center; margin-top:8px;">
-          <div style="text-align:center;">
-            <svg viewBox="0 0 160 100" style="width:200px; height:auto; border:1.5px solid var(--gray2); border-radius:6px; background:#f8fafc;">
-              <rect x="20" y="20" width="120" height="60" fill="#1e5fa8" opacity="0.85"/>
-              <rect x="20" y="20" width="120" height="20" fill="#3b82c4" opacity="0.85"/>
-              <circle cx="40" cy="50" r="6" fill="#fde68a"/>
-              <circle cx="80" cy="60" r="6" fill="#fde68a"/>
-              <circle cx="120" cy="55" r="6" fill="#fde68a"/>
-            </svg>
-            <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--navy); font-weight:700; margin-top:8px;">Image A</div>
-          </div>
-
-          <div style="font-size:32px; color:var(--gray4);">vs</div>
-
-          <div style="text-align:center;">
-            <svg viewBox="0 0 160 100" style="width:200px; height:auto; border:1.5px solid var(--gray2); border-radius:6px; background:#f8fafc;">
-              <rect x="21" y="20" width="120" height="60" fill="#1e5fa8" opacity="0.85"/>
-              <rect x="21" y="20" width="120" height="20" fill="#3b82c4" opacity="0.85"/>
-              <circle cx="41" cy="50" r="6" fill="#fde68a"/>
-              <circle cx="81" cy="60" r="6" fill="#fde68a"/>
-              <circle cx="121" cy="55" r="6" fill="#fde68a"/>
-            </svg>
-            <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--navy); font-weight:700; margin-top:8px;">Image B · shifted +1px</div>
+    <div style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; align-items:stretch;">
+      <div class="figure-card" style="padding:16px; background:var(--blue-bg); border-color:var(--blue-pale); display:flex; flex-direction:column; gap:12px; min-height:684px;">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="width:54px; height:54px; border-radius:50%; background:var(--blue); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:900; flex:0 0 auto;">01</div>
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--blue); letter-spacing:0.1em; font-weight:800;">2015 · M&amp;V</div>
+            <div style="font-size:29px; color:var(--navy); font-weight:900; line-height:1.16;">特征反演</div>
           </div>
         </div>
-
-        <div style="margin-top:20px; padding:14px 18px; background:var(--gray1); border-radius:8px;">
-          <div style="display:flex; gap:24px; align-items:center;">
-            <div style="text-align:center; flex:1;">
-              <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--gray4); letter-spacing:0.08em;">人眼判断</div>
-              <div style="font-family:'JetBrains Mono',monospace; font-size:26px; color:var(--green); font-weight:900; margin-top:4px;">几乎一样</div>
-            </div>
-            <div style="width:1px; height:50px; background:var(--gray2);"></div>
-            <div style="text-align:center; flex:1;">
-              <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--gray4); letter-spacing:0.08em;">per-pixel L2</div>
-              <div style="font-family:'JetBrains Mono',monospace; font-size:26px; color:var(--rose); font-weight:900; margin-top:4px;">巨大 ≠ 0</div>
-            </div>
-          </div>
+        <div style="height:322px; border-radius:9px; border:1px solid var(--blue-pale); background:#fff; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+          <img src="uploads/lineage-mv.svg" alt="M&amp;V 特征反演流程图" style="width:100%; height:100%; object-fit:contain; display:block;">
         </div>
-
-        <div style="margin-top:14px; font-size:18px; color:#475569; line-height:1.6;">
-          因为 L2 是<strong>逐像素</strong>对齐 — 整张图哪怕只错位一个像素，每个像素对都"对错了人"。这一个反例就足以证明：<strong style="color:var(--rose);">L2 衡量的是逐点对齐程度，不是感知相似度。</strong>
+        <div style="font-size:21px; color:var(--navy); line-height:1.36; font-weight:900;">它证明什么？</div>
+        <div style="font-size:18px; color:#1e3a5f; line-height:1.42; padding:12px 14px; background:#fff; border-radius:8px;">
+          固定 CNN，优化图像像素；如果特征匹配还能反推出可辨认图像，说明这层特征保留了人能理解的结构。
         </div>
+        <div style="font-size:18px; color:#1e3a5f; line-height:1.38;"><strong style="color:var(--blue);">留给 Johnson：</strong>用 VGG 特征差衡量“内容像不像”。</div>
+        <div style="font-size:15px; color:#7f1d1d; line-height:1.32; margin-top:auto;">边界：不是风格迁移；也没有提出“低层=风格，高层=内容”。</div>
       </div>
 
-      <!-- Right: consequences -->
-      <div style="display:flex; flex-direction:column; gap:14px;">
-
-        <div class="callout" style="padding:14px 20px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--blue); font-weight:800; letter-spacing:0.06em;">① 平均化偏好</div>
-          <div style="font-size:18px; color:#334155; line-height:1.55; margin-top:4px;">
-            病态任务有多解时，L2 倾向输出<strong style="color:var(--blue);">所有解的均值</strong> — 视觉上就是<strong>模糊</strong>。SRCNN 的 ×4 输出"软糊"就是这个原因。
+      <div class="figure-card" style="padding:16px; background:var(--accent-pale); border-color:#f0a060; display:flex; flex-direction:column; gap:12px; min-height:684px;">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="width:54px; height:54px; border-radius:50%; background:var(--accent-dk); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:900; flex:0 0 auto;">02</div>
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--accent-dk); letter-spacing:0.1em; font-weight:800;">2015 · GATYS</div>
+            <div style="font-size:29px; color:#7c2d12; font-weight:900; line-height:1.16;">内容 + 风格</div>
           </div>
         </div>
-
-        <div class="callout warm" style="padding:14px 20px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--accent-dk); font-weight:800; letter-spacing:0.06em;">② 与 PSNR 等价</div>
-          <div style="font-size:18px; color:#7c2d12; line-height:1.55; margin-top:4px;">
-            PSNR ≡ 单调函数(per-pixel L2)。用 L2 训练 = 优化 PSNR。但<strong style="color:var(--accent-dk);">PSNR 与人眼主观质量相关性很差</strong>（论文引 [60-62]）。
-          </div>
+        <div style="height:322px; border-radius:9px; border:1px solid #f0a060; background:#fff; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+          <img src="uploads/lineage-gatys.svg" alt="Gatys 内容损失与 Gram 风格损失流程图" style="width:100%; height:100%; object-fit:contain; display:block;">
         </div>
-
-        <div class="callout rose" style="padding:14px 20px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--rose); font-weight:800; letter-spacing:0.06em;">③ 加噪声假设</div>
-          <div style="font-size:18px; color:#7f1d1d; line-height:1.55; margin-top:4px;">
-            L2 损失隐含"残差是<strong>加性高斯白噪声</strong>"的统计假设 — 这在风格迁移、SR 等任务中<strong>完全不成立</strong>。
-          </div>
+        <div style="font-size:21px; color:#7c2d12; line-height:1.36; font-weight:900;">它补上什么？</div>
+        <div style="font-size:18px; color:#7c2d12; line-height:1.42; padding:12px 14px; background:#fff; border-radius:8px;">
+          内容用 VGG 激活对齐；风格不用像素对齐，而用 Gram 矩阵对齐通道共现统计。
         </div>
-
-        <div class="callout green" style="padding:14px 20px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--green); font-weight:800; letter-spacing:0.06em;">④ 解决方向</div>
-          <div style="font-size:18px; color:#14532d; line-height:1.55; margin-top:4px;">
-            需要换一把<strong style="color:var(--green);">"懂语义"</strong>的尺子 — 它能容忍局部位移、知道"这是什么"。<strong>预训练 CNN 的中层特征</strong>正好满足。
-          </div>
-        </div>
-
+        <div style="font-size:18px; color:#7c2d12; line-height:1.38;"><strong style="color:var(--accent-dk);">留给 Johnson：</strong>内容损失 + Gram 风格损失。</div>
+        <div style="font-size:15px; color:#7f1d1d; line-height:1.32; margin-top:auto;">代价：每张输出图都要迭代优化像素，反复跑 VGG 前向和反传。</div>
       </div>
 
+      <div class="figure-card" style="padding:16px; background:var(--green-pale); border-color:#86efac; display:flex; flex-direction:column; gap:12px; min-height:684px;">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="width:54px; height:54px; border-radius:50%; background:var(--green); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:900; flex:0 0 auto;">03</div>
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--green); letter-spacing:0.1em; font-weight:800;">2016 · D&amp;B</div>
+            <div style="font-size:29px; color:#14532d; font-weight:900; line-height:1.16;">前馈反演</div>
+          </div>
+        </div>
+        <div style="height:322px; border-radius:9px; border:1px solid #86efac; background:#fff; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+          <img src="uploads/lineage-db.svg" alt="Dosovitskiy 与 Brox 前馈反演网络流程图" style="width:100%; height:100%; object-fit:contain; display:block;">
+        </div>
+        <div style="font-size:21px; color:#14532d; line-height:1.36; font-weight:900;">它解决什么速度问题？</div>
+        <div style="font-size:18px; color:#14532d; line-height:1.42; padding:12px 14px; background:#fff; border-radius:8px;">
+          不再每次都优化一张图，而是训练一个 decoder / up-conv 网络，从表示一次前向还原图像。
+        </div>
+        <div style="font-size:18px; color:#14532d; line-height:1.38;"><strong style="color:var(--green);">留给 Johnson：</strong>慢过程可以学成快速前馈网络。</div>
+        <div style="font-size:15px; color:#7f1d1d; line-height:1.32; margin-top:auto;">边界：它主要学重建 MSE，不是 Johnson 的感知损失训练框架。</div>
+      </div>
+    </div>
+
+    <div class="callout warm" style="padding:11px 22px;">
+      <div style="font-size:23px; line-height:1.36; text-align:center;">
+        <strong style="color:var(--accent-dk);">到这里只差一步：</strong>把 Gatys 的感知目标，装进一个能前馈推理的图像变换网络。
+      </div>
     </div>
 
   </div>
   <div class="bottom-bar"></div>
 </section>
 
-<!-- ───────────────────────── Slide 6 — Paper's idea ───────────────────────── -->
-<section data-screen-label="06 本文破局点">
+<!-- ───────────────────────── Slide 6 — Johnson synthesis ───────────────────────── -->
+<section data-screen-label="06 本文如何集大成">
   <div class="slide-header">
     <span class="num">06</span>
     <span class="section-tag">PART 1 · 背景</span>
-    <h2 style="margin-left:14px;">本文的破局点 · 用感知损失训练前馈网络</h2>
+    <h2 style="margin-left:14px;">本文如何集大成 · 最后一张图合流</h2>
   </div>
   <div class="accent-rule"></div>
 
-  <div style="padding:30px 80px 0; display:flex; flex-direction:column; gap:24px;">
+  <div style="padding:24px 72px 0; display:flex; flex-direction:column; gap:18px;">
 
-    <div class="callout dark" style="padding:18px 26px;">
-      <div style="font-size:23px; line-height:1.55;">
-        本文的核心创新可以用一句话描述：<strong style="color:#fde68a;">用一个固定的预训练 VGG 网络当"损失函数"</strong>，去训练一个全新的、可被端到端优化的<strong style="color:#86efac;">前馈变换网络</strong>。训练时慢一点没关系，<strong>推理只要一次前向</strong>。
+    <div class="callout dark" style="padding:14px 24px;">
+      <div style="font-size:23px; line-height:1.42;">
+        Johnson, Alahi &amp; Fei-Fei 的“集大成”不是重发明 VGG 或 Gram，而是把前三步接成一套训练系统：<strong style="color:#fde68a;">用感知损失训练前馈网络</strong>，训练完以后 <strong style="color:#86efac;">推理只跑 <span style="font-family:'JetBrains Mono',monospace;">f_W</span></strong>。
       </div>
     </div>
 
-    <!-- 4-cell value chart -->
-    <div class="figure-card" style="padding:24px 32px;">
-      <div class="tag purple" style="font-size:16px; margin-bottom:18px;">两条轴 · 四个象限</div>
-
-      <div style="position:relative; height:340px;">
-        <!-- Axes -->
-        <div style="position:absolute; left:50%; top:0; bottom:0; width:2px; background:var(--gray3); transform:translateX(-50%);"></div>
-        <div style="position:absolute; top:50%; left:0; right:0; height:2px; background:var(--gray3); transform:translateY(-50%);"></div>
-
-        <!-- Axis labels -->
-        <div style="position:absolute; top:-4px; left:50%; transform:translateX(-50%); font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--gray4); background:#fff; padding:0 8px;">↑ 速度快</div>
-        <div style="position:absolute; bottom:-4px; left:50%; transform:translateX(-50%); font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--gray4); background:#fff; padding:0 8px;">↓ 速度慢</div>
-        <div style="position:absolute; left:-4px; top:50%; transform:translateY(-50%) rotate(-90deg); font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--gray4); background:#fff; padding:0 8px;">← 感知差</div>
-        <div style="position:absolute; right:-4px; top:50%; transform:translateY(-50%) rotate(90deg); font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--gray4); background:#fff; padding:0 8px;">感知好 →</div>
-
-        <!-- Q1 top-left: feed-forward + per-pixel -->
-        <div style="position:absolute; top:24px; left:5%; width:42%; padding:16px 22px; background:var(--blue-bg); border:1.5px solid var(--blue-pale); border-radius:10px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--blue); letter-spacing:0.1em; font-weight:800;">ROUTE A · 现状</div>
-          <div style="font-size:22px; color:var(--navy); font-weight:800; line-height:1.2; margin-top:4px;">前馈 + 像素损失</div>
-          <div style="font-size:16px; color:var(--gray4); margin-top:4px;">快 · 但模糊（SRCNN, FCN）</div>
+    <div style="display:grid; grid-template-columns:340px minmax(0,1fr) 340px; gap:20px; align-items:stretch;">
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div class="figure-card" style="padding:18px 20px; background:var(--blue-bg); border-color:var(--blue-pale); min-height:150px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--blue); letter-spacing:0.1em; font-weight:800;">M&amp;V 给它</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#64748b; line-height:1.28; margin-top:6px;">Understanding Deep Image Representations by Inverting Them</div>
+          <div style="font-size:25px; color:var(--navy); font-weight:900; line-height:1.18; margin-top:8px;">特征重建</div>
+          <div style="font-size:18px; color:#334155; line-height:1.4; margin-top:8px;">输出图不必逐像素相同；在 VGG 特征里像，也有意义。</div>
         </div>
-
-        <!-- Q2 top-right: ours -->
-        <div style="position:absolute; top:24px; right:5%; width:42%; padding:16px 22px; background:var(--green-pale); border:2.5px solid var(--green); border-radius:10px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--green); letter-spacing:0.1em; font-weight:800;">★ OURS · 想要到这里</div>
-          <div style="font-size:24px; color:#14532d; font-weight:900; line-height:1.2; margin-top:4px;">前馈 + 感知损失</div>
-          <div style="font-size:16px; color:var(--green); margin-top:4px;">既快又好</div>
+        <div class="figure-card" style="padding:18px 20px; background:var(--accent-pale); border-color:#f0a060; min-height:150px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--accent-dk); letter-spacing:0.1em; font-weight:800;">Gatys 给它</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#9a3412; line-height:1.28; margin-top:6px;">A Neural Algorithm of Artistic Style</div>
+          <div style="font-size:25px; color:#7c2d12; font-weight:900; line-height:1.18; margin-top:8px;">内容 + Gram 风格</div>
+          <div style="font-size:18px; color:#7c2d12; line-height:1.4; margin-top:8px;">高质量目标已经有了，只是原方法每张图都要慢慢优化。</div>
         </div>
-
-        <!-- Q3 bottom-left: nothing useful -->
-        <div style="position:absolute; bottom:24px; left:5%; width:42%; padding:16px 22px; background:var(--gray1); border:1.5px solid var(--gray2); border-radius:10px; opacity:0.7;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--gray4); letter-spacing:0.1em; font-weight:800;">空 · 没人这么做</div>
-          <div style="font-size:22px; color:var(--gray4); font-weight:800; line-height:1.2; margin-top:4px;">优化 + 像素损失</div>
-          <div style="font-size:16px; color:var(--gray4); margin-top:4px;">又慢又差，谁都不要</div>
-        </div>
-
-        <!-- Q4 bottom-right: gatys -->
-        <div style="position:absolute; bottom:24px; right:5%; width:42%; padding:16px 22px; background:var(--accent-pale); border:1.5px solid #f0a060; border-radius:10px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--accent-dk); letter-spacing:0.1em; font-weight:800;">ROUTE B · 现状</div>
-          <div style="font-size:22px; color:#7c2d12; font-weight:800; line-height:1.2; margin-top:4px;">优化 + 感知损失</div>
-          <div style="font-size:16px; color:var(--accent-dk); margin-top:4px;">美 · 但慢（Gatys, Mahendran）</div>
+        <div class="figure-card" style="padding:18px 20px; background:var(--green-pale); border-color:#86efac; min-height:150px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--green); letter-spacing:0.1em; font-weight:800;">D&amp;B 给它</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#166534; line-height:1.28; margin-top:6px;">Inverting Visual Representations with Convolutional Networks</div>
+          <div style="font-size:25px; color:#14532d; font-weight:900; line-height:1.18; margin-top:8px;">前馈近似</div>
+          <div style="font-size:18px; color:#14532d; line-height:1.4; margin-top:8px;">把“优化得到图像”的过程，学成一次网络前向。</div>
         </div>
       </div>
 
-      <div style="margin-top:18px; padding:12px 18px; background:var(--blue-bg); border-radius:8px; font-size:19px; color:var(--navy); line-height:1.5;">
-        <strong style="color:var(--blue);">作者的洞察：</strong>左上和右下早就有人占据，<strong style="color:var(--green);">右上的空白</strong>看似显然，但没人填 — 因为缺少一个关键认识：<strong>感知损失本质上是一个可微分的网络</strong>，完全可以接到训练流程里。
+      <div class="figure-card" style="padding:18px 22px 16px; display:flex; flex-direction:column; gap:12px; min-height:654px;">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div class="tag purple" style="font-size:16px;">图四 · Johnson 的合并答案</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#64748b; font-weight:800;">train: VGG loss · test: f_W only</div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#4c1d95; line-height:1.3; font-weight:800;">Perceptual Losses for Real-Time Style Transfer and Super-Resolution · Fig. 1</div>
+        <div style="height:322px; border:1px solid var(--gray2); border-radius:9px; background:#fff; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+          <img src="uploads/johnson-official-training-architecture.png" alt="Johnson et al. 官方训练架构图：Image Transform Net 与 VGG-16 Loss Network" style="width:100%; height:100%; object-fit:contain; display:block;">
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:auto;">
+          <div style="padding:13px 14px; border-radius:8px; background:var(--blue-bg); color:#1e3a5f; font-size:15.5px; line-height:1.32;"><strong style="color:var(--blue);">f<sub>W</sub></strong><br>只训练图像变换网络</div>
+          <div style="padding:13px 14px; border-radius:8px; background:var(--purple-pale); color:#4c1d95; font-size:15.5px; line-height:1.32;"><strong style="color:var(--purple);">φ</strong><br>冻结 VGG-16 负责算损失</div>
+          <div style="padding:13px 14px; border-radius:8px; background:var(--accent-pale); color:#7c2d12; font-size:15.5px; line-height:1.32;"><strong style="color:var(--accent-dk);">y<sub>s</sub> / y<sub>c</sub></strong><br>风格与内容目标分流</div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div class="figure-card" style="padding:20px 22px; background:var(--purple-pale); border-color:#c4b5fd; min-height:206px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--purple); letter-spacing:0.1em; font-weight:800;">训练时</div>
+          <div style="font-size:28px; color:#4c1d95; font-weight:900; line-height:1.2; margin-top:8px;">VGG 只打分</div>
+          <div style="font-size:19px; color:#4c1d95; line-height:1.45; margin-top:10px;">输出图和目标图都进冻结 VGG，损失的梯度穿过 VGG 回到 <span style="font-family:'JetBrains Mono',monospace;">f_W</span>。</div>
+        </div>
+        <div class="figure-card" style="padding:20px 22px; background:var(--green-pale); border-color:#86efac; min-height:206px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--green); letter-spacing:0.1em; font-weight:800;">推理时</div>
+          <div style="font-size:28px; color:#14532d; font-weight:900; line-height:1.2; margin-top:8px;">VGG 被丢掉</div>
+          <div style="font-size:19px; color:#14532d; line-height:1.45; margin-top:10px;">只保留图像变换网络，一张图一次前向，所以速度来自 D&amp;B 路线。</div>
+        </div>
+        <div class="figure-card" style="padding:20px 22px; background:var(--accent-pale); border-color:#f0a060; min-height:206px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--accent-dk); letter-spacing:0.1em; font-weight:800;">结果</div>
+          <div style="font-size:28px; color:#7c2d12; font-weight:900; line-height:1.2; margin-top:8px;">质量目标 + 实时速度</div>
+          <div style="font-size:19px; color:#7c2d12; line-height:1.45; margin-top:10px;">风格迁移和超分辨率共用这条逻辑：别在像素上死磕，在感知特征上对齐。</div>
+        </div>
       </div>
     </div>
 
-    <div class="callout green" style="padding:14px 26px;">
-      <div style="font-size:22px; line-height:1.55;">
-        <strong style="color:var(--green);">三个里程碑式贡献</strong>：①把感知损失从优化器搬进前馈训练 · ②风格迁移获得三个数量级加速 · ③在 ×4/×8 超分上证明感知损失比像素损失肉眼更好（即使 PSNR 更差）。
+    <div class="callout green" style="padding:13px 24px;">
+      <div style="font-size:24px; line-height:1.38; text-align:center;">
+        <strong style="color:var(--green);">一句话：</strong>Johnson 把 Gatys 的慢优化目标，蒸成一个训练好的前馈图像变换网络。
       </div>
     </div>
 
@@ -729,128 +706,136 @@ table.deck tr.alt td.ours-best { background: #ffeef0; }
   <div style="padding:18px 80px 0; display:flex; flex-direction:column; gap:14px;">
 
     <div class="figure-card" style="padding:18px 24px;">
-      <div class="tag" style="font-size:15px; margin-bottom:10px;">Fig. 2 · 系统结构（重绘） · 左边的网络要训练 · 右边的网络固定</div>
+      <div class="tag" style="font-size:15px; margin-bottom:10px;">Fig. 2 · 系统结构（重绘） · 左边 f_W 要训练 · 右边 φ 固定 · 风格损失取 4 层、内容损失取 relu3_3（完整目标还含 TV 正则，见后页）</div>
 
-      <svg viewBox="0 0 1200 380" style="width:100%; height:auto;">
+      <svg viewBox="0 0 1240 560" style="width:100%; height:auto;">
         <defs>
-          <marker id="arr8" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
-            <path d="M0,0 L8,4 L0,8" fill="none" stroke="#0f2d52" stroke-width="2"/>
-          </marker>
-          <marker id="arrW" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
-            <path d="M0,0 L8,4 L0,8" fill="none" stroke="#fff" stroke-width="2"/>
-          </marker>
+          <marker id="arrK" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7" fill="none" stroke="#0f2d52" stroke-width="1.8"/></marker>
+          <marker id="arrP" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7" fill="none" stroke="#6d28d9" stroke-width="1.8"/></marker>
+          <marker id="arrG" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7" fill="none" stroke="#15803d" stroke-width="1.8"/></marker>
+          <marker id="arrR" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7" fill="none" stroke="#be123c" stroke-width="1.8"/></marker>
         </defs>
 
-        <!-- Input image -->
-        <g transform="translate(20,140)">
-          <rect width="100" height="100" fill="#fde68a" stroke="#b45309" stroke-width="2" rx="4"/>
-          <text x="50" y="58" font-size="14" fill="#7c2d12" text-anchor="middle" font-family="Noto Sans SC" font-weight="700">Input</text>
-          <text x="50" y="76" font-size="13" fill="#7c2d12" text-anchor="middle" font-family="JetBrains Mono">x</text>
-          <text x="50" y="118" font-size="13" fill="#64748b" text-anchor="middle" font-family="JetBrains Mono">输入图</text>
+        <!-- ─── Legend (top-left) ─── -->
+        <g font-family="Noto Sans SC">
+          <rect x="24" y="18" width="392" height="106" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+          <text x="40" y="44" font-size="14" font-weight="700" fill="#334155">图例 · 怎么读这张图</text>
+          <circle cx="44" cy="64" r="5" fill="#6d28d9"/>
+          <text x="58" y="69" font-size="12.5" fill="#4c1d95"><tspan font-style="italic">ℓ</tspan><tspan font-size="9" dy="3">style</tspan><tspan dy="-3" font-family="JetBrains Mono"> · relu1_2/2_2/3_3/4_3 → 比 Gram 矩阵</tspan></text>
+          <circle cx="44" cy="86" r="5" fill="#15803d"/>
+          <text x="58" y="91" font-size="12.5" fill="#14532d"><tspan font-style="italic">ℓ</tspan><tspan font-size="9" dy="3">feat</tspan><tspan dy="-3" font-family="JetBrains Mono"> · relu3_3 → 比特征图</tspan></text>
+          <text x="40" y="113" font-size="12" fill="#64748b">ŷ、y_c、y_s 都经过<tspan font-weight="700">同一个冻结的 φ (VGG-16)</tspan></text>
         </g>
 
-        <!-- arrow to fW -->
-        <line x1="125" y1="190" x2="175" y2="190" stroke="#0f2d52" stroke-width="2.5" marker-end="url(#arr8)"/>
+        <!-- ─── Input x ─── -->
+        <g font-family="Noto Sans SC">
+          <rect x="20" y="222" width="96" height="96" rx="6" fill="#fde68a" stroke="#b45309" stroke-width="2"/>
+          <text x="68" y="262" font-size="14" font-weight="700" fill="#7c2d12" text-anchor="middle">Input 输入图</text>
+          <text x="68" y="288" font-size="18" fill="#7c2d12" text-anchor="middle" font-family="JetBrains Mono" font-style="italic">x</text>
+        </g>
+        <line x1="116" y1="270" x2="156" y2="270" stroke="#0f2d52" stroke-width="2.4" marker-end="url(#arrK)"/>
 
-        <!-- Image Transform Net fW (TRAINABLE) -->
-        <g transform="translate(180,90)">
-          <rect width="240" height="200" fill="#1e5fa8" stroke="#0f2d52" stroke-width="2.5" rx="8"/>
-          <text x="120" y="40" font-size="18" fill="#fff" text-anchor="middle" font-family="Noto Sans SC" font-weight="700">Image Transformation</text>
-          <text x="120" y="64" font-size="18" fill="#fff" text-anchor="middle" font-family="Noto Sans SC" font-weight="700">Network · f_W</text>
-          <line x1="20" y1="78" x2="220" y2="78" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-
-          <!-- Tiny block stack -->
-          <g transform="translate(36,98)">
-            <rect x="0" y="0" width="22" height="76" fill="#3b82c4" stroke="#fff" stroke-width="0.5"/>
-            <rect x="26" y="6" width="22" height="64" fill="#3b82c4" stroke="#fff" stroke-width="0.5"/>
-            <rect x="52" y="14" width="22" height="48" fill="#3b82c4" stroke="#fff" stroke-width="0.5"/>
-            <rect x="78" y="20" width="22" height="36" fill="#3b82c4" stroke="#fff" stroke-width="0.5"/>
-            <rect x="104" y="14" width="22" height="48" fill="#3b82c4" stroke="#fff" stroke-width="0.5"/>
-            <rect x="130" y="6" width="22" height="64" fill="#3b82c4" stroke="#fff" stroke-width="0.5"/>
-            <rect x="156" y="0" width="22" height="76" fill="#3b82c4" stroke="#fff" stroke-width="0.5"/>
+        <!-- ─── Image Transform Net f_W (TRAINABLE) ─── -->
+        <g font-family="Noto Sans SC">
+          <rect x="160" y="190" width="224" height="160" rx="10" fill="#eff6ff" stroke="#1e5fa8" stroke-width="2.4" stroke-dasharray="7 4"/>
+          <text x="272" y="214" font-size="15" font-weight="700" fill="#0f2d52" text-anchor="middle">Image Transform Net</text>
+          <text x="272" y="234" font-size="15" font-weight="700" fill="#1e5fa8" text-anchor="middle" font-family="JetBrains Mono">f_W</text>
+          <!-- encoder-decoder hourglass -->
+          <g stroke="#fff" stroke-width="0.6">
+            <rect x="191" y="254" width="18" height="72" fill="#3b82c4"/>
+            <rect x="215" y="261" width="18" height="58" fill="#3b82c4"/>
+            <rect x="239" y="268" width="18" height="44" fill="#3b82c4"/>
+            <rect x="263" y="273" width="18" height="34" fill="#3b82c4"/>
+            <rect x="287" y="268" width="18" height="44" fill="#3b82c4"/>
+            <rect x="311" y="261" width="18" height="58" fill="#3b82c4"/>
+            <rect x="335" y="254" width="18" height="72" fill="#3b82c4"/>
           </g>
-          <text x="120" y="194" font-size="11" fill="#fde68a" text-anchor="middle" font-family="JetBrains Mono" font-weight="700" letter-spacing="0.1em">★ TRAINABLE · 权重 W</text>
+          <text x="272" y="343" font-size="11.5" font-weight="700" fill="#b45309" text-anchor="middle" font-family="JetBrains Mono" letter-spacing="0.08em">★ 待训练 TRAINABLE</text>
+        </g>
+        <line x1="384" y1="270" x2="420" y2="270" stroke="#0f2d52" stroke-width="2.4" marker-end="url(#arrK)"/>
+
+        <!-- ─── Output ŷ ─── -->
+        <g font-family="Noto Sans SC">
+          <rect x="424" y="232" width="96" height="76" rx="6" fill="#dbeafe" stroke="#1e5fa8" stroke-width="2"/>
+          <text x="472" y="262" font-size="13" font-weight="700" fill="#0f2d52" text-anchor="middle">生成图</text>
+          <text x="472" y="288" font-size="14" fill="#0f2d52" text-anchor="middle" font-family="JetBrains Mono">ŷ = f_W(x)</text>
         </g>
 
-        <!-- Output ŷ -->
-        <line x1="425" y1="190" x2="475" y2="190" stroke="#0f2d52" stroke-width="2.5" marker-end="url(#arr8)"/>
-
-        <g transform="translate(480,140)">
-          <rect width="100" height="100" fill="#dbeafe" stroke="#1e5fa8" stroke-width="2" rx="4"/>
-          <text x="50" y="56" font-size="14" fill="#0f2d52" text-anchor="middle" font-family="Noto Sans SC" font-weight="700">Output</text>
-          <text x="50" y="74" font-size="14" fill="#0f2d52" text-anchor="middle" font-family="JetBrains Mono">ŷ = f_W(x)</text>
+        <!-- ─── Style target y_s (above) ─── -->
+        <g font-family="Noto Sans SC">
+          <rect x="424" y="120" width="96" height="58" rx="6" fill="#ede9fe" stroke="#6d28d9" stroke-width="2" stroke-dasharray="4 3"/>
+          <text x="472" y="144" font-size="12.5" font-weight="700" fill="#4c1d95" text-anchor="middle">Style 风格</text>
+          <text x="472" y="166" font-size="14" fill="#4c1d95" text-anchor="middle" font-family="JetBrains Mono">y_s</text>
+        </g>
+        <!-- ─── Content target y_c (below) ─── -->
+        <g font-family="Noto Sans SC">
+          <rect x="424" y="372" width="96" height="58" rx="6" fill="#dcfce7" stroke="#15803d" stroke-width="2" stroke-dasharray="4 3"/>
+          <text x="472" y="396" font-size="12.5" font-weight="700" fill="#14532d" text-anchor="middle">Content 内容</text>
+          <text x="472" y="418" font-size="14" fill="#14532d" text-anchor="middle" font-family="JetBrains Mono">y_c</text>
         </g>
 
-        <!-- ŷ feeds into VGG -->
-        <line x1="585" y1="190" x2="640" y2="190" stroke="#0f2d52" stroke-width="2.5" marker-end="url(#arr8)"/>
+        <!-- three inputs enter the SAME VGG -->
+        <line x1="520" y1="270" x2="636" y2="270" stroke="#0f2d52" stroke-width="2.4" marker-end="url(#arrK)"/>
+        <path d="M520 150 C 580 150 590 226 632 234" fill="none" stroke="#6d28d9" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#arrP)"/>
+        <path d="M520 401 C 580 401 590 324 632 316" fill="none" stroke="#15803d" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#arrG)"/>
 
-        <!-- Content target y_c (from above) -->
-        <g transform="translate(480,20)">
-          <rect width="100" height="80" fill="#dcfce7" stroke="#15803d" stroke-width="2" rx="4" stroke-dasharray="4 3"/>
-          <text x="50" y="40" font-size="13" fill="#14532d" text-anchor="middle" font-family="Noto Sans SC" font-weight="700">Content Target</text>
-          <text x="50" y="60" font-size="14" fill="#14532d" text-anchor="middle" font-family="JetBrains Mono">y_c</text>
+        <!-- ─── Loss Network φ (VGG-16, FROZEN) ─── -->
+        <rect x="636" y="180" width="540" height="200" rx="12" fill="#f8fafc" stroke="#0f2d52" stroke-width="2.2" stroke-dasharray="7 4"/>
+        <g font-family="Noto Sans SC">
+          <text x="666" y="283" font-size="12.5" font-weight="700" fill="#0f2d52" text-anchor="middle" transform="rotate(-90 666 283)">Loss Network · φ (VGG-16)</text>
+          <rect x="1034" y="183" width="132" height="26" rx="13" fill="#0f2d52"/>
+          <text x="1100" y="201" font-size="12.5" font-weight="700" fill="#fff" text-anchor="middle">🔒 全程冻结</text>
         </g>
-        <line x1="530" y1="105" x2="640" y2="175" stroke="#15803d" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#arr8)"/>
-
-        <!-- Style target y_s (from below) -->
-        <g transform="translate(480,280)">
-          <rect width="100" height="80" fill="#ede9fe" stroke="#6d28d9" stroke-width="2" rx="4" stroke-dasharray="4 3"/>
-          <text x="50" y="40" font-size="13" fill="#4c1d95" text-anchor="middle" font-family="Noto Sans SC" font-weight="700">Style Target</text>
-          <text x="50" y="60" font-size="14" fill="#4c1d95" text-anchor="middle" font-family="JetBrains Mono">y_s</text>
-        </g>
-        <line x1="530" y1="280" x2="640" y2="205" stroke="#6d28d9" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#arr8)"/>
-
-        <!-- Loss Network (FIXED) -->
-        <g transform="translate(645,40)">
-          <rect width="380" height="300" fill="#0f2d52" stroke="#0f2d52" stroke-width="2.5" rx="8"/>
-          <text x="190" y="40" font-size="20" fill="#fff" text-anchor="middle" font-family="Noto Sans SC" font-weight="700">Loss Network · φ (VGG-16)</text>
-          <line x1="20" y1="56" x2="360" y2="56" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-
-          <!-- VGG layer stack -->
-          <g transform="translate(30,72)">
-            <rect x="0" y="0" width="50" height="180" fill="#1e5fa8" rx="2"/>
-            <text x="25" y="100" font-size="11" fill="#fff" text-anchor="middle" font-family="JetBrains Mono" transform="rotate(-90 25 100)">relu1_2</text>
-
-            <rect x="60" y="10" width="50" height="160" fill="#1e5fa8" opacity="0.95" rx="2"/>
-            <text x="85" y="100" font-size="11" fill="#fde68a" text-anchor="middle" font-family="JetBrains Mono" transform="rotate(-90 85 100)" font-weight="700">★ relu2_2</text>
-
-            <rect x="120" y="20" width="50" height="140" fill="#3b82c4" rx="2"/>
-            <text x="145" y="100" font-size="11" fill="#fff" text-anchor="middle" font-family="JetBrains Mono" transform="rotate(-90 145 100)" font-weight="700">★ relu3_3</text>
-
-            <rect x="180" y="30" width="50" height="120" fill="#3b82c4" opacity="0.85" rx="2"/>
-            <text x="205" y="100" font-size="11" fill="#fff" text-anchor="middle" font-family="JetBrains Mono" transform="rotate(-90 205 100)" font-weight="700">★ relu4_3</text>
-
-            <rect x="240" y="40" width="50" height="100" fill="#3b82c4" opacity="0.7" rx="2"/>
-            <text x="265" y="100" font-size="11" fill="#fff" text-anchor="middle" font-family="JetBrains Mono" transform="rotate(-90 265 100)">relu5_3</text>
-
-            <text x="305" y="100" font-size="22" fill="#fde68a" text-anchor="middle" font-family="JetBrains Mono">→ φ_j(·)</text>
-          </g>
-
-          <text x="190" y="284" font-size="12" fill="#fca5a5" text-anchor="middle" font-family="JetBrains Mono" font-weight="700" letter-spacing="0.1em">🔒 FROZEN · ImageNet 预训练</text>
+        <!-- VGG stages: single blue gradient (deeper = darker); only loss colors carry meaning -->
+        <g font-family="JetBrains Mono">
+          <rect x="695" y="208" width="66" height="150" rx="3" fill="#dbeafe"/>
+          <text x="728" y="350" font-size="11" fill="#0f2d52" text-anchor="middle">relu1_2</text>
+          <rect x="785" y="220" width="66" height="138" rx="3" fill="#bfdbfe"/>
+          <text x="818" y="350" font-size="11" fill="#0f2d52" text-anchor="middle">relu2_2</text>
+          <rect x="875" y="232" width="66" height="126" rx="3" fill="#93c5fd"/>
+          <text x="908" y="350" font-size="11" fill="#0f2d52" text-anchor="middle" font-weight="700">relu3_3</text>
+          <rect x="965" y="244" width="66" height="114" rx="3" fill="#60a5fa"/>
+          <text x="998" y="350" font-size="11" fill="#0f2d52" text-anchor="middle">relu4_3</text>
+          <rect x="1055" y="256" width="66" height="102" rx="3" fill="#3b82c4"/>
+          <text x="1088" y="350" font-size="11" fill="#fff" text-anchor="middle">relu5_3</text>
+          <text x="1088" y="372" font-size="9.5" fill="#94a3b8" text-anchor="middle">未取用</text>
         </g>
 
-        <!-- Losses from VGG -->
-        <g transform="translate(1040,60)">
-          <rect width="148" height="80" fill="#15803d" rx="6"/>
-          <text x="74" y="32" font-size="14" fill="#fff" text-anchor="middle" font-family="Noto Sans SC" font-weight="700">Feature Loss</text>
-          <text x="74" y="56" font-size="13" fill="#dcfce7" text-anchor="middle" font-family="JetBrains Mono">ℓ_feat(ŷ, y_c)</text>
+        <!-- ─── Style loss chips (top), each above its tapped layer ─── -->
+        <g font-family="Noto Sans SC">
+          <!-- relu1_2 -->
+          <line x1="728" y1="208" x2="728" y2="74" stroke="#6d28d9" stroke-width="1.8" marker-end="url(#arrP)"/>
+          <rect x="686" y="20" width="84" height="54" rx="7" fill="#ede9fe" stroke="#6d28d9" stroke-width="1.6"/>
+          <text x="728" y="44" font-size="14" fill="#4c1d95" text-anchor="middle"><tspan font-style="italic">ℓ</tspan><tspan font-size="10" dy="3">style</tspan></text>
+          <text x="728" y="64" font-size="10.5" fill="#6d28d9" text-anchor="middle" font-family="JetBrains Mono">relu1_2</text>
+          <!-- relu2_2 -->
+          <line x1="818" y1="220" x2="818" y2="74" stroke="#6d28d9" stroke-width="1.8" marker-end="url(#arrP)"/>
+          <rect x="776" y="20" width="84" height="54" rx="7" fill="#ede9fe" stroke="#6d28d9" stroke-width="1.6"/>
+          <text x="818" y="44" font-size="14" fill="#4c1d95" text-anchor="middle"><tspan font-style="italic">ℓ</tspan><tspan font-size="10" dy="3">style</tspan></text>
+          <text x="818" y="64" font-size="10.5" fill="#6d28d9" text-anchor="middle" font-family="JetBrains Mono">relu2_2</text>
+          <!-- relu3_3 -->
+          <line x1="908" y1="232" x2="908" y2="74" stroke="#6d28d9" stroke-width="1.8" marker-end="url(#arrP)"/>
+          <rect x="866" y="20" width="84" height="54" rx="7" fill="#ede9fe" stroke="#6d28d9" stroke-width="1.6"/>
+          <text x="908" y="44" font-size="14" fill="#4c1d95" text-anchor="middle"><tspan font-style="italic">ℓ</tspan><tspan font-size="10" dy="3">style</tspan></text>
+          <text x="908" y="64" font-size="10.5" fill="#6d28d9" text-anchor="middle" font-family="JetBrains Mono">relu3_3</text>
+          <!-- relu4_3 -->
+          <line x1="998" y1="244" x2="998" y2="74" stroke="#6d28d9" stroke-width="1.8" marker-end="url(#arrP)"/>
+          <rect x="956" y="20" width="84" height="54" rx="7" fill="#ede9fe" stroke="#6d28d9" stroke-width="1.6"/>
+          <text x="998" y="44" font-size="14" fill="#4c1d95" text-anchor="middle"><tspan font-style="italic">ℓ</tspan><tspan font-size="10" dy="3">style</tspan></text>
+          <text x="998" y="64" font-size="10.5" fill="#6d28d9" text-anchor="middle" font-family="JetBrains Mono">relu4_3</text>
         </g>
 
-        <g transform="translate(1040,170)">
-          <rect width="148" height="80" fill="#6d28d9" rx="6"/>
-          <text x="74" y="32" font-size="14" fill="#fff" text-anchor="middle" font-family="Noto Sans SC" font-weight="700">Style Loss</text>
-          <text x="74" y="56" font-size="13" fill="#ede9fe" text-anchor="middle" font-family="JetBrains Mono">ℓ_style(ŷ, y_s)</text>
+        <!-- ─── Content / feature loss chip (bottom), below relu3_3 ─── -->
+        <g font-family="Noto Sans SC">
+          <line x1="908" y1="358" x2="908" y2="426" stroke="#15803d" stroke-width="1.8" marker-end="url(#arrG)"/>
+          <rect x="846" y="426" width="124" height="54" rx="7" fill="#dcfce7" stroke="#15803d" stroke-width="1.6"/>
+          <text x="908" y="450" font-size="14" fill="#14532d" text-anchor="middle"><tspan font-style="italic">ℓ</tspan><tspan font-size="10" dy="3">feat</tspan><tspan dy="-3"> 内容损失</tspan></text>
+          <text x="908" y="470" font-size="10.5" fill="#15803d" text-anchor="middle" font-family="JetBrains Mono">relu3_3</text>
         </g>
 
-        <g transform="translate(1040,280)">
-          <rect width="148" height="60" fill="#b45309" rx="6"/>
-          <text x="74" y="26" font-size="13" fill="#fff" text-anchor="middle" font-family="Noto Sans SC" font-weight="700">TV Reg</text>
-          <text x="74" y="46" font-size="13" fill="#fff3e8" text-anchor="middle" font-family="JetBrains Mono">ℓ_TV(ŷ)</text>
-        </g>
-
-        <!-- Backprop arrow back to fW -->
-        <path d="M 1115 340 Q 1115 365 600 365 Q 300 365 300 295" fill="none" stroke="#be123c" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arr8)"/>
-        <text x="600" y="360" font-size="14" fill="#be123c" text-anchor="middle" font-family="JetBrains Mono" font-weight="700">∇W · 梯度只更新 f_W，不动 φ</text>
+        <!-- ─── Backprop (only updates f_W) ─── -->
+        <path d="M908 480 C 908 514 700 520 472 520 C 360 520 272 520 272 358" fill="none" stroke="#be123c" stroke-width="2.2" stroke-dasharray="6 4" marker-end="url(#arrR)"/>
+        <text x="560" y="540" font-size="13.5" fill="#be123c" text-anchor="middle" font-family="Noto Sans SC" font-weight="700">梯度 ∇W：只回传更新 f_W，φ 全程冻结</text>
       </svg>
     </div>
 

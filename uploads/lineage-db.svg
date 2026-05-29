@@ -1,0 +1,48 @@
+<svg viewBox="0 0 680 372" role="img" aria-label="Dosovitskiy and Brox replace per-image optimization with a feed-forward inversion network" xmlns="http://www.w3.org/2000/svg">
+  <title>Dosovitskiy &amp; Brox 用前馈网络替代逐图优化</title>
+  <desc>对比：M&amp;V 和 Gatys 的老办法把特征通过数百步迭代优化还原成图像，很慢；D&amp;B 训练一个解码网络一次前向就还原，很快，但训练时用的是逐像素重建损失。</desc>
+  <style>
+    .th{font:700 14px "Noto Sans SC",Arial,sans-serif;fill:#0f2d52}
+    .ts{font:500 12px "Noto Sans SC",Arial,sans-serif;fill:#64748b}
+    .mn{font:600 12.5px "JetBrains Mono","Noto Sans SC",Arial,sans-serif;fill:#0f172a}
+  </style>
+  <defs>
+    <marker id="arDbFast" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+  </defs>
+  <rect width="680" height="372" rx="18" fill="#fbfffc"/>
+
+  <text class="th" x="40" y="36" style="fill:#6B5DD3">① 老办法：逐图优化（M&amp;V、Gatys）</text>
+  <rect x="40" y="56" width="86" height="50" rx="8" fill="#E1F0EA" stroke="#1E8268" stroke-width="1"/>
+  <text class="mn" x="83" y="81" text-anchor="middle" dominant-baseline="central">特征 φ</text>
+  <rect x="190" y="48" width="176" height="66" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="1" stroke-dasharray="5 4"/>
+  <text class="th" x="278" y="72" text-anchor="middle" dominant-baseline="central">逐图优化 ↻</text>
+  <text class="ts" x="278" y="92" text-anchor="middle" dominant-baseline="central">梯度改像素 · 数百次</text>
+  <rect x="444" y="56" width="86" height="50" rx="8" fill="#EFE8D9" stroke="#B4B2A9" stroke-width="1"/>
+  <text class="th" x="487" y="81" text-anchor="middle" dominant-baseline="central">图像</text>
+  <rect x="548" y="58" width="92" height="46" rx="8" fill="#F7E7DD" stroke="#C0532A" stroke-width="1"/>
+  <text class="th" x="594" y="76" text-anchor="middle" dominant-baseline="central" style="fill:#C0532A">慢</text>
+  <text class="ts" x="594" y="94" text-anchor="middle" dominant-baseline="central" style="fill:#C0532A">每张图重来</text>
+  <line x1="126" y1="81" x2="190" y2="81" stroke="#7C7565" stroke-width="1.5" marker-end="url(#arDbFast)"/>
+  <line x1="366" y1="81" x2="444" y2="81" stroke="#7C7565" stroke-width="1.5" marker-end="url(#arDbFast)"/>
+
+  <line x1="40" y1="150" x2="640" y2="150" stroke="#D8CFBC" stroke-width="0.5"/>
+  <text class="ts" x="340" y="144" text-anchor="middle" style="fill:#1E8268">把慢循环 → 换成快网络</text>
+
+  <text class="th" x="40" y="190" style="fill:#1C5C96">② D&amp;B 新办法：训练一个网络一步到位</text>
+  <rect x="40" y="210" width="86" height="50" rx="8" fill="#E1F0EA" stroke="#1E8268" stroke-width="1"/>
+  <text class="mn" x="83" y="235" text-anchor="middle" dominant-baseline="central">特征 φ</text>
+  <rect x="190" y="202" width="176" height="66" rx="8" fill="#E2EDF7" stroke="#1C5C96" stroke-width="1.2"/>
+  <text class="th" x="278" y="226" text-anchor="middle" dominant-baseline="central">解码网络 up-conv</text>
+  <text class="ts" x="278" y="246" text-anchor="middle" dominant-baseline="central">训练好 · 一步到位</text>
+  <rect x="444" y="210" width="86" height="50" rx="8" fill="#EFE8D9" stroke="#B4B2A9" stroke-width="1"/>
+  <text class="th" x="487" y="235" text-anchor="middle" dominant-baseline="central">图像</text>
+  <rect x="548" y="212" width="92" height="46" rx="8" fill="#E1F0EA" stroke="#1E8268" stroke-width="1"/>
+  <text class="th" x="594" y="230" text-anchor="middle" dominant-baseline="central" style="fill:#1E8268">快</text>
+  <text class="ts" x="594" y="248" text-anchor="middle" dominant-baseline="central" style="fill:#1E8268">一次前向</text>
+  <line x1="126" y1="235" x2="190" y2="235" stroke="#7C7565" stroke-width="1.5" marker-end="url(#arDbFast)"/>
+  <line x1="366" y1="235" x2="444" y2="235" stroke="#7C7565" stroke-width="1.5" marker-end="url(#arDbFast)"/>
+
+  <rect x="40" y="300" width="600" height="58" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="1" stroke-dasharray="5 4"/>
+  <text class="ts" x="58" y="324">网络怎么学会的？在大量「图像 ↔ 特征」对上训练，</text>
+  <text class="ts" x="58" y="344">用 <tspan style="fill:#C0532A;font-weight:600">逐像素损失</tspan> 监督 —— 这正是 Johnson 接下来要换成「感知损失」的那一环。</text>
+</svg>

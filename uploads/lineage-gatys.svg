@@ -1,0 +1,82 @@
+<svg viewBox="0 0 700 512" role="img" aria-label="Gatys artistic style optimization workflow" xmlns="http://www.w3.org/2000/svg">
+  <title>Gatys 风格迁移：先固定靶子，再逐图优化生成图</title>
+  <desc>上半区准备靶子只算一次：内容图和风格图各过同一个冻结VGG得到内容靶和风格靶。下半区优化循环：生成图反复过同一个VGG，内容损失和风格损失求和成总损失，梯度只更新生成图像素。</desc>
+  <style>
+    .th{font:700 14px "Noto Sans SC",Arial,sans-serif;fill:#23201A}
+    .ts{font:500 12px "Noto Sans SC",Arial,sans-serif;fill:#4A453B}
+  </style>
+  <defs>
+    <marker id="arGatysPrecise" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+  <rect width="700" height="512" rx="18" fill="#fffdfb"/>
+
+  <rect x="24" y="28" width="652" height="150" rx="12" fill="none" stroke="#C9C2B0" stroke-width="1" stroke-dasharray="6 5"/>
+  <text class="th" x="40" y="48" style="fill:#8A8270">① 准备靶子 · 整个过程只算一次（之后固定不动）</text>
+
+  <rect x="44" y="60" width="96" height="46" rx="8" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="1"/>
+  <text class="th" x="92" y="76" text-anchor="middle" dominant-baseline="central">内容图 x_c</text>
+  <text class="ts" x="92" y="94" text-anchor="middle" dominant-baseline="central">定内容/布局</text>
+  <rect x="44" y="116" width="96" height="46" rx="8" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="1"/>
+  <text class="th" x="92" y="132" text-anchor="middle" dominant-baseline="central">风格图 x_s</text>
+  <text class="ts" x="92" y="150" text-anchor="middle" dominant-baseline="central">定纹理/色调</text>
+
+  <rect x="198" y="78" width="94" height="60" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="1" stroke-dasharray="5 4"/>
+  <text class="th" x="245" y="100" text-anchor="middle" dominant-baseline="central">冻结 VGG</text>
+  <text class="ts" x="245" y="118" text-anchor="middle" dominant-baseline="central">同一个网络</text>
+
+  <rect x="330" y="56" width="172" height="46" rx="8" fill="#E2EDF7" stroke="#1C5C96" stroke-width="1"/>
+  <text class="th" x="416" y="72" text-anchor="middle" dominant-baseline="central">内容靶 φ_L(x_c)</text>
+  <text class="ts" x="416" y="90" text-anchor="middle" dominant-baseline="central">单层（常用高层）</text>
+  <rect x="330" y="112" width="172" height="50" rx="8" fill="#E2EDF7" stroke="#1C5C96" stroke-width="1"/>
+  <text class="th" x="416" y="129" text-anchor="middle" dominant-baseline="central">风格靶 Gram_l(x_s)</text>
+  <text class="ts" x="416" y="147" text-anchor="middle" dominant-baseline="central">多层 Gram 统计</text>
+
+  <rect x="520" y="86" width="146" height="48" rx="8" fill="#FAEEDA" stroke="#BA7517" stroke-width="1"/>
+  <text class="th" x="593" y="104" text-anchor="middle" dominant-baseline="central" style="fill:#7A4D0F">算一次 → 固定</text>
+  <text class="ts" x="593" y="122" text-anchor="middle" dominant-baseline="central" style="fill:#7A4D0F">循环里不再变</text>
+
+  <line x1="140" y1="83" x2="198" y2="98" stroke="#7C7565" stroke-width="1.5" marker-end="url(#arGatysPrecise)"/>
+  <line x1="140" y1="139" x2="198" y2="120" stroke="#7C7565" stroke-width="1.5" marker-end="url(#arGatysPrecise)"/>
+  <line x1="292" y1="98" x2="330" y2="78" stroke="#7C7565" stroke-width="1.5" marker-end="url(#arGatysPrecise)"/>
+  <line x1="292" y1="120" x2="330" y2="136" stroke="#7C7565" stroke-width="1.5" marker-end="url(#arGatysPrecise)"/>
+  <line x1="502" y1="79" x2="520" y2="100" stroke="#7C7565" stroke-width="1.5" marker-end="url(#arGatysPrecise)"/>
+  <line x1="502" y1="137" x2="520" y2="116" stroke="#7C7565" stroke-width="1.5" marker-end="url(#arGatysPrecise)"/>
+
+  <rect x="24" y="196" width="652" height="304" rx="12" fill="none" stroke="#C9C2B0" stroke-width="1" stroke-dasharray="6 5"/>
+  <text class="th" x="40" y="216" style="fill:#8A8270">② 优化循环 · 重复数百次（每一步都重跑同一个 VGG）</text>
+
+  <rect x="44" y="330" width="106" height="66" rx="8" fill="#ECE9FB" stroke="#6B5DD3" stroke-width="1.4"/>
+  <text class="th" x="97" y="348" text-anchor="middle" dominant-baseline="central">生成图 x̂</text>
+  <text class="ts" x="97" y="366" text-anchor="middle" dominant-baseline="central" style="fill:#6B5DD3">唯一被优化</text>
+  <text class="ts" x="97" y="383" text-anchor="middle" dominant-baseline="central">初始 = 噪声</text>
+
+  <rect x="198" y="332" width="94" height="62" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="1" stroke-dasharray="5 4"/>
+  <text class="th" x="245" y="354" text-anchor="middle" dominant-baseline="central">同一个 VGG</text>
+  <text class="ts" x="245" y="372" text-anchor="middle" dominant-baseline="central">每步都跑</text>
+
+  <rect x="408" y="244" width="184" height="56" rx="8" fill="#F7E7DD" stroke="#C0532A" stroke-width="1.2"/>
+  <text class="th" x="500" y="263" text-anchor="middle" dominant-baseline="central">内容损失 ℓc</text>
+  <text class="ts" x="500" y="282" text-anchor="middle" dominant-baseline="central">φ_L(x̂) 对齐内容靶 · 单层</text>
+  <rect x="408" y="398" width="184" height="56" rx="8" fill="#F7E7DD" stroke="#C0532A" stroke-width="1.2"/>
+  <text class="th" x="500" y="417" text-anchor="middle" dominant-baseline="central">风格损失 ℓs</text>
+  <text class="ts" x="500" y="436" text-anchor="middle" dominant-baseline="central">Gram(x̂) 对齐风格靶 · 多层和</text>
+
+  <rect x="602" y="320" width="74" height="58" rx="8" fill="#FAEEDA" stroke="#BA7517" stroke-width="1"/>
+  <text class="th" x="639" y="342" text-anchor="middle" dominant-baseline="central" style="fill:#7A4D0F">总损失</text>
+  <text class="ts" x="639" y="360" text-anchor="middle" dominant-baseline="central" style="fill:#7A4D0F">α·ℓc+β·ℓs</text>
+
+  <line x1="150" y1="363" x2="198" y2="363" stroke="#7C7565" stroke-width="1.5" marker-end="url(#arGatysPrecise)"/>
+  <line x1="292" y1="352" x2="408" y2="272" stroke="#7C7565" stroke-width="1.5" marker-end="url(#arGatysPrecise)"/>
+  <line x1="292" y1="374" x2="408" y2="426" stroke="#7C7565" stroke-width="1.5" marker-end="url(#arGatysPrecise)"/>
+  <line x1="592" y1="272" x2="602" y2="338" stroke="#7C7565" stroke-width="1.5" marker-end="url(#arGatysPrecise)"/>
+  <line x1="592" y1="426" x2="602" y2="360" stroke="#7C7565" stroke-width="1.5" marker-end="url(#arGatysPrecise)"/>
+
+  <path d="M602 360 L614 360 L614 478 L36 478 L36 363 L44 363" fill="none" stroke="#6B5DD3" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#arGatysPrecise)"/>
+  <text class="ts" x="330" y="470" text-anchor="middle" style="fill:#534AB7">梯度只更新生成图 x̂ 的像素；靶子和 VGG 全程不动</text>
+
+  <line x1="245" y1="138" x2="245" y2="332" stroke="#1E8268" stroke-width="1.4" stroke-dasharray="4 4"/>
+  <rect x="300" y="222" width="120" height="26" rx="13" fill="#E1F0EA" stroke="#1E8268" stroke-width="0.8"/>
+  <text class="ts" x="360" y="235" text-anchor="middle" dominant-baseline="central" style="fill:#0F6E56">＝ 同一个网络</text>
+</svg>
