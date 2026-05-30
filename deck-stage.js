@@ -69,6 +69,8 @@
   const DESIGN_W_DEFAULT = 1920;
   const DESIGN_H_DEFAULT = 1080;
   const OVERLAY_HIDE_MS = 1800;
+  // How long the auto-hide rail stays open after the pointer leaves it.
+  const RAIL_AUTOHIDE_MS = 1100;
   const VALIDATE_ATTR = 'no_overflowing_text,no_overlapping_text,slide_sized_text';
 
   const pad2 = (n) => String(n).padStart(2, '0');
@@ -318,6 +320,23 @@
     }
     :host([data-rail-anim]) .tapzones { transition: left 200ms cubic-bezier(.3,.7,.4,1); }
 
+    /* ── Auto-hide rail (rail-autohide attribute) ──────────────────────────
+       The rail floats over the stage (see _railWidth → 0 so the canvas keeps
+       full size) and slides off to the left when the pointer isn't near it.
+       Driven by data-autohidden, independent of the manual data-user-hidden
+       toggle. A drop shadow lifts it off the slide while open. */
+    :host([rail-autohide]) .rail {
+      box-shadow: 2px 0 26px rgba(0,0,0,0.5);
+      transition: transform 240ms cubic-bezier(.3,.7,.4,1);
+    }
+    :host([rail-autohide]) .rail[data-autohidden] {
+      transform: translateX(-100%);
+      box-shadow: none;
+    }
+    /* The width-drag handle would float in mid-air over the slide once the
+       rail overlays instead of reserving space — drop it in auto-hide mode. */
+    :host([rail-autohide]) .rail-resize { display: none; }
+
     .thumb {
       position: relative;
       display: flex;
@@ -563,6 +582,7 @@
       this._onResize = this._onResize.bind(this);
       this._onSlotChange = this._onSlotChange.bind(this);
       this._onMouseMove = this._onMouseMove.bind(this);
+      this._onWheel = this._onWheel.bind(this);
       this._onTapBack = this._onTapBack.bind(this);
       this._onTapForward = this._onTapForward.bind(this);
       this._onMessage = this._onMessage.bind(this);
@@ -594,6 +614,9 @@
       window.addEventListener('keydown', this._onKey);
       window.addEventListener('resize', this._onResize);
       window.addEventListener('mousemove', this._onMouseMove, { passive: true });
+      // Scroll-wheel / trackpad navigation. Non-passive so we can preventDefault
+      // and stop the page from rubber-band scrolling behind the deck.
+      window.addEventListener('wheel', this._onWheel, { passive: false });
       window.addEventListener('message', this._onMessage);
       window.addEventListener('click', this._onDocClick, true);
       // Initial collection + layout happens via slotchange, which fires on mount.
@@ -689,6 +712,11 @@
       // so _renderRail's early-return skipped the initial build.
       this._syncRailHidden();
       this._renderRail();
+      // Auto-hide rail starts tucked away; the pointer reveals it (see
+      // _updateRailAutohide). Without this it would flash open on load.
+      if (this.hasAttribute('rail-autohide') && this._rail) {
+        this._rail.setAttribute('data-autohidden', '');
+      }
       this._fit();
     }
 
@@ -781,10 +809,13 @@
       window.removeEventListener('keydown', this._onKey);
       window.removeEventListener('resize', this._onResize);
       window.removeEventListener('mousemove', this._onMouseMove);
+      window.removeEventListener('wheel', this._onWheel);
       window.removeEventListener('message', this._onMessage);
       window.removeEventListener('click', this._onDocClick, true);
       if (this._hideTimer) clearTimeout(this._hideTimer);
       if (this._mouseIdleTimer) clearTimeout(this._mouseIdleTimer);
+      if (this._wheelTimer) clearTimeout(this._wheelTimer);
+      if (this._railHideTimer) clearTimeout(this._railHideTimer);
       if (this._liveTimer) clearTimeout(this._liveTimer);
       if (this._tweakTimer) clearTimeout(this._tweakTimer);
       if (this._railAnimTimer) clearTimeout(this._railAnimTimer);
@@ -1152,6 +1183,9 @@
       // corrects it.
       if (!this._railEnabled || !this._railVisible || this.hasAttribute('no-rail')
           || this.hasAttribute('noscale') || this._presenting || this._previewMode) return 0;
+      // Auto-hide rail floats over the slide rather than pushing it aside, so
+      // the canvas keeps full size whether the rail is open or tucked away.
+      if (this.hasAttribute('rail-autohide')) return 0;
       return this._railPx || 0;
     }
 
@@ -1183,9 +1217,63 @@
 
     _onResize() { this._fit(); }
 
-    _onMouseMove() {
+    _onMouseMove(e) {
       // Keep overlay visible while mouse moves; hide after idle.
       this._flashOverlay();
+      // Reveal/conceal the auto-hide rail by pointer proximity to the left edge.
+      if (e && this.hasAttribute('rail-autohide')) this._updateRailAutohide(e.clientX);
+    }
+
+    /** Pointer-driven show/hide for the auto-hide rail. Open while the cursor
+     *  is over the rail strip (so it can reach a thumbnail); when closed, only
+     *  the thin left edge re-triggers it; otherwise schedule a hide. */
+    _updateRailAutohide(x) {
+      if (!this._rail || !this._railEnabled || this._presenting
+          || this._previewMode || this.hasAttribute('noscale')) return;
+      const w = this._railPx || 0;
+      const open = !this._rail.hasAttribute('data-autohidden');
+      const EDGE = 24;
+      const activate = open ? (x <= w + EDGE) : (x <= EDGE);
+      if (activate) this._showRailAuto();
+      else this._scheduleRailHide();
+    }
+
+    _showRailAuto() {
+      if (this._railHideTimer) { clearTimeout(this._railHideTimer); this._railHideTimer = null; }
+      if (this._rail && this._rail.hasAttribute('data-autohidden')) {
+        this._rail.removeAttribute('data-autohidden');
+        // Frame width is finally measurable once the rail isn't translated
+        // fully off-screen on some first-open paths — re-scale the clones.
+        this._scaleThumbs();
+      }
+    }
+
+    _scheduleRailHide() {
+      if (this._railHideTimer || !this._rail || this._rail.hasAttribute('data-autohidden')) return;
+      this._railHideTimer = setTimeout(() => {
+        this._railHideTimer = null;
+        if (this._rail) this._rail.setAttribute('data-autohidden', '');
+      }, RAIL_AUTOHIDE_MS);
+    }
+
+    /** Scroll-wheel / trackpad navigation: one slide per discrete gesture.
+     *  Fires on the first wheel event, then re-arms only after the wheel has
+     *  been quiet briefly — so a trackpad's momentum stream or a fast wheel
+     *  spin advances a single slide instead of skipping several. */
+    _onWheel(e) {
+      if (!this._slides.length) return;
+      if (this._confirm && this._confirm.hasAttribute('data-open')) return;
+      if (this._menu && this._menu.hasAttribute('data-open')) return;
+      // Let the thumbnail rail scroll its own overflow natively.
+      if (this._rail && e.composedPath && e.composedPath().includes(this._rail)) return;
+      const d = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+      if (!d) return;
+      e.preventDefault();
+      const fresh = this._wheelIdle !== false;
+      clearTimeout(this._wheelTimer);
+      this._wheelIdle = false;
+      this._wheelTimer = setTimeout(() => { this._wheelIdle = true; }, 150);
+      if (fresh) this._advance(d > 0 ? 1 : -1, 'wheel');
     }
 
     _onMessage(e) {
@@ -1430,6 +1518,10 @@
       // entry.i is refreshed on every _renderRail reconcile pass, so
       // handlers read the thumb's current position without an O(N) scan.
       const idx = () => entry.i;
+      // Auto-hide mode treats the rail as a read-only preview: suppress the
+      // drag-reorder and right-click skip/delete affordances so a finished
+      // deck can't be edited by accident while navigating.
+      const editable = !this.hasAttribute('rail-autohide');
 
       thumb.addEventListener('click', () => this._go(idx(), 'click'));
       // ↑/↓ step through the rail when a thumb has focus. _go clamps at the
@@ -1448,10 +1540,12 @@
       });
       thumb.addEventListener('contextmenu', (e) => {
         e.preventDefault();
+        if (!editable) return;
         this._openMenu(idx(), e.clientX, e.clientY);
       });
-      thumb.draggable = true;
+      thumb.draggable = editable;
       thumb.addEventListener('dragstart', (e) => {
+        if (!editable) return;
         this._dragFrom = idx();
         thumb.setAttribute('data-dragging', '');
         e.dataTransfer.effectAllowed = 'move';
