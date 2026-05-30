@@ -708,7 +708,7 @@ table.deck tr.alt td.ours-best { background: #ffeef0; }
     <div class="figure-card" style="padding:18px 24px;">
       <div class="tag" style="font-size:15px; margin-bottom:10px;">Fig. 2 · 系统结构（重绘） · 左边 f_W 要训练 · 右边 φ 固定 · 风格损失取 4 层、内容损失取 relu3_3（完整目标还含 TV 正则，见后页）</div>
 
-      <svg viewBox="0 0 1240 560" style="width:100%; height:auto;">
+      <svg viewBox="0 0 1240 478" style="width:100%; height:auto;">
         <defs>
           <marker id="arrK" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7" fill="none" stroke="#0f2d52" stroke-width="1.8"/></marker>
           <marker id="arrP" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7" fill="none" stroke="#6d28d9" stroke-width="1.8"/></marker>
@@ -716,15 +716,17 @@ table.deck tr.alt td.ours-best { background: #ffeef0; }
           <marker id="arrR" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7" fill="none" stroke="#be123c" stroke-width="1.8"/></marker>
         </defs>
 
-        <!-- ─── Legend (top-left) ─── -->
+        <!-- ─── Legend (top-left): three colored lines ─── -->
         <g font-family="Noto Sans SC">
-          <rect x="24" y="18" width="392" height="106" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
-          <text x="40" y="44" font-size="14" font-weight="700" fill="#334155">图例 · 怎么读这张图</text>
-          <circle cx="44" cy="64" r="5" fill="#6d28d9"/>
-          <text x="58" y="69" font-size="12.5" fill="#4c1d95"><tspan font-style="italic">ℓ</tspan><tspan font-size="9" dy="3">style</tspan><tspan dy="-3" font-family="JetBrains Mono"> · relu1_2/2_2/3_3/4_3 → 比 Gram 矩阵</tspan></text>
-          <circle cx="44" cy="86" r="5" fill="#15803d"/>
-          <text x="58" y="91" font-size="12.5" fill="#14532d"><tspan font-style="italic">ℓ</tspan><tspan font-size="9" dy="3">feat</tspan><tspan dy="-3" font-family="JetBrains Mono"> · relu3_3 → 比特征图</tspan></text>
-          <text x="40" y="113" font-size="12" fill="#64748b">ŷ、y_c、y_s 都经过<tspan font-weight="700">同一个冻结的 φ (VGG-16)</tspan></text>
+          <rect x="24" y="14" width="392" height="122" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+          <text x="40" y="37" font-size="13.5" font-weight="700" fill="#334155">三条线怎么读 · 都过同一个冻结 φ</text>
+          <rect x="40" y="50" width="24" height="4" rx="2" fill="#0f2d52"/>
+          <text x="72" y="56" font-size="12" fill="#0f2d52"><tspan font-weight="700">ŷ 生成图</tspan> · 前向进 VGG，并在各层抽出激活</text>
+          <rect x="40" y="72" width="24" height="4" rx="2" fill="#6d28d9"/>
+          <text x="72" y="78" font-size="12" fill="#4c1d95"><tspan font-weight="700">y_s 风格靶</tspan> · 进 VGG，在 4 层（紫点）比 Gram</text>
+          <rect x="40" y="94" width="24" height="4" rx="2" fill="#15803d"/>
+          <text x="72" y="100" font-size="12" fill="#14532d"><tspan font-weight="700">y_c 内容靶</tspan> · 进 VGG，在 relu3_3 比特征图</text>
+          <text x="40" y="124" font-size="11" fill="#64748b">每个损失 = ŷ 激活 ↔ 靶激活，在<tspan font-weight="700">同一层</tspan>相比</text>
         </g>
 
         <!-- ─── Input x ─── -->
@@ -774,10 +776,14 @@ table.deck tr.alt td.ours-best { background: #ffeef0; }
           <text x="472" y="418" font-size="14" fill="#14532d" text-anchor="middle" font-family="JetBrains Mono">y_c</text>
         </g>
 
-        <!-- three inputs enter the SAME VGG -->
-        <line x1="520" y1="270" x2="636" y2="270" stroke="#0f2d52" stroke-width="2.4" marker-end="url(#arrK)"/>
-        <path d="M520 150 C 580 150 590 226 632 234" fill="none" stroke="#6d28d9" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#arrP)"/>
-        <path d="M520 401 C 580 401 590 324 632 316" fill="none" stroke="#15803d" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#arrG)"/>
+        <!-- ŷ enters the VGG (forward pass); it is tapped at each layer below -->
+        <line x1="520" y1="270" x2="676" y2="270" stroke="#0f2d52" stroke-width="2.4" marker-end="url(#arrK)"/>
+        <!-- y_s ALSO enters the same VGG; its style features are compared at relu1_2…relu4_3 (top lane) -->
+        <path d="M520 150 C 584 150 600 192 648 192 L 1012 192" fill="none" stroke="#6d28d9" stroke-width="1.8" stroke-dasharray="5 3"/>
+        <circle cx="728" cy="192" r="3.4" fill="#6d28d9"/><circle cx="818" cy="192" r="3.4" fill="#6d28d9"/><circle cx="908" cy="192" r="3.4" fill="#6d28d9"/><circle cx="998" cy="192" r="3.4" fill="#6d28d9"/>
+        <!-- y_c ALSO enters the same VGG; its content features are compared at relu3_3 (bottom lane) -->
+        <path d="M520 401 C 584 401 600 346 648 346 L 908 346" fill="none" stroke="#15803d" stroke-width="1.8" stroke-dasharray="5 3"/>
+        <circle cx="908" cy="346" r="3.4" fill="#15803d"/>
 
         <!-- ─── Loss Network φ (VGG-16, FROZEN) ─── -->
         <rect x="636" y="180" width="540" height="200" rx="12" fill="#f8fafc" stroke="#0f2d52" stroke-width="2.2" stroke-dasharray="7 4"/>
@@ -788,54 +794,54 @@ table.deck tr.alt td.ours-best { background: #ffeef0; }
         </g>
         <!-- VGG stages: single blue gradient (deeper = darker); only loss colors carry meaning -->
         <g font-family="JetBrains Mono">
-          <rect x="695" y="208" width="66" height="150" rx="3" fill="#dbeafe"/>
-          <text x="728" y="350" font-size="11" fill="#0f2d52" text-anchor="middle">relu1_2</text>
-          <rect x="785" y="220" width="66" height="138" rx="3" fill="#bfdbfe"/>
-          <text x="818" y="350" font-size="11" fill="#0f2d52" text-anchor="middle">relu2_2</text>
-          <rect x="875" y="232" width="66" height="126" rx="3" fill="#93c5fd"/>
-          <text x="908" y="350" font-size="11" fill="#0f2d52" text-anchor="middle" font-weight="700">relu3_3</text>
-          <rect x="965" y="244" width="66" height="114" rx="3" fill="#60a5fa"/>
-          <text x="998" y="350" font-size="11" fill="#0f2d52" text-anchor="middle">relu4_3</text>
-          <rect x="1055" y="256" width="66" height="102" rx="3" fill="#3b82c4"/>
-          <text x="1088" y="350" font-size="11" fill="#fff" text-anchor="middle">relu5_3</text>
-          <text x="1088" y="372" font-size="9.5" fill="#94a3b8" text-anchor="middle">未取用</text>
+          <rect x="695" y="205" width="66" height="130" rx="3" fill="#dbeafe"/>
+          <text x="728" y="322" font-size="11" fill="#0f2d52" text-anchor="middle">relu1_2</text>
+          <rect x="785" y="213" width="66" height="122" rx="3" fill="#bfdbfe"/>
+          <text x="818" y="322" font-size="11" fill="#0f2d52" text-anchor="middle">relu2_2</text>
+          <rect x="875" y="221" width="66" height="114" rx="3" fill="#93c5fd"/>
+          <text x="908" y="322" font-size="11" fill="#0f2d52" text-anchor="middle" font-weight="700">relu3_3</text>
+          <rect x="965" y="229" width="66" height="106" rx="3" fill="#60a5fa"/>
+          <text x="998" y="322" font-size="11" fill="#0f2d52" text-anchor="middle">relu4_3</text>
+          <rect x="1055" y="237" width="66" height="98" rx="3" fill="#3b82c4"/>
+          <text x="1088" y="322" font-size="11" fill="#fff" text-anchor="middle">relu5_3</text>
+          <text x="1088" y="351" font-size="9.5" fill="#94a3b8" text-anchor="middle">未取用</text>
         </g>
 
-        <!-- ─── Style loss chips (top), each above its tapped layer ─── -->
+        <!-- ─── Style loss chips (top): ŷ tap (navy) rises, y_s ref (purple) drops in ─── -->
         <g font-family="Noto Sans SC">
           <!-- relu1_2 -->
-          <line x1="728" y1="208" x2="728" y2="74" stroke="#6d28d9" stroke-width="1.8" marker-end="url(#arrP)"/>
+          <line x1="728" y1="205" x2="728" y2="74" stroke="#0f2d52" stroke-width="1.8" marker-end="url(#arrK)"/>
           <rect x="686" y="20" width="84" height="54" rx="7" fill="#ede9fe" stroke="#6d28d9" stroke-width="1.6"/>
           <text x="728" y="44" font-size="14" fill="#4c1d95" text-anchor="middle"><tspan font-style="italic">ℓ</tspan><tspan font-size="10" dy="3">style</tspan></text>
           <text x="728" y="64" font-size="10.5" fill="#6d28d9" text-anchor="middle" font-family="JetBrains Mono">relu1_2</text>
           <!-- relu2_2 -->
-          <line x1="818" y1="220" x2="818" y2="74" stroke="#6d28d9" stroke-width="1.8" marker-end="url(#arrP)"/>
+          <line x1="818" y1="213" x2="818" y2="74" stroke="#0f2d52" stroke-width="1.8" marker-end="url(#arrK)"/>
           <rect x="776" y="20" width="84" height="54" rx="7" fill="#ede9fe" stroke="#6d28d9" stroke-width="1.6"/>
           <text x="818" y="44" font-size="14" fill="#4c1d95" text-anchor="middle"><tspan font-style="italic">ℓ</tspan><tspan font-size="10" dy="3">style</tspan></text>
           <text x="818" y="64" font-size="10.5" fill="#6d28d9" text-anchor="middle" font-family="JetBrains Mono">relu2_2</text>
           <!-- relu3_3 -->
-          <line x1="908" y1="232" x2="908" y2="74" stroke="#6d28d9" stroke-width="1.8" marker-end="url(#arrP)"/>
+          <line x1="908" y1="221" x2="908" y2="74" stroke="#0f2d52" stroke-width="1.8" marker-end="url(#arrK)"/>
           <rect x="866" y="20" width="84" height="54" rx="7" fill="#ede9fe" stroke="#6d28d9" stroke-width="1.6"/>
           <text x="908" y="44" font-size="14" fill="#4c1d95" text-anchor="middle"><tspan font-style="italic">ℓ</tspan><tspan font-size="10" dy="3">style</tspan></text>
           <text x="908" y="64" font-size="10.5" fill="#6d28d9" text-anchor="middle" font-family="JetBrains Mono">relu3_3</text>
           <!-- relu4_3 -->
-          <line x1="998" y1="244" x2="998" y2="74" stroke="#6d28d9" stroke-width="1.8" marker-end="url(#arrP)"/>
+          <line x1="998" y1="229" x2="998" y2="74" stroke="#0f2d52" stroke-width="1.8" marker-end="url(#arrK)"/>
           <rect x="956" y="20" width="84" height="54" rx="7" fill="#ede9fe" stroke="#6d28d9" stroke-width="1.6"/>
           <text x="998" y="44" font-size="14" fill="#4c1d95" text-anchor="middle"><tspan font-style="italic">ℓ</tspan><tspan font-size="10" dy="3">style</tspan></text>
           <text x="998" y="64" font-size="10.5" fill="#6d28d9" text-anchor="middle" font-family="JetBrains Mono">relu4_3</text>
         </g>
 
-        <!-- ─── Content / feature loss chip (bottom), below relu3_3 ─── -->
+        <!-- ─── Content / feature loss chip (bottom): ŷ tap (navy) drops, y_c ref (green) enters ─── -->
         <g font-family="Noto Sans SC">
-          <line x1="908" y1="358" x2="908" y2="426" stroke="#15803d" stroke-width="1.8" marker-end="url(#arrG)"/>
-          <rect x="846" y="426" width="124" height="54" rx="7" fill="#dcfce7" stroke="#15803d" stroke-width="1.6"/>
-          <text x="908" y="450" font-size="14" fill="#14532d" text-anchor="middle"><tspan font-style="italic">ℓ</tspan><tspan font-size="10" dy="3">feat</tspan><tspan dy="-3"> 内容损失</tspan></text>
-          <text x="908" y="470" font-size="10.5" fill="#15803d" text-anchor="middle" font-family="JetBrains Mono">relu3_3</text>
+          <line x1="908" y1="335" x2="908" y2="390" stroke="#0f2d52" stroke-width="1.8" marker-end="url(#arrK)"/>
+          <rect x="846" y="392" width="124" height="52" rx="7" fill="#dcfce7" stroke="#15803d" stroke-width="1.6"/>
+          <text x="908" y="416" font-size="14" fill="#14532d" text-anchor="middle"><tspan font-style="italic">ℓ</tspan><tspan font-size="10" dy="3">feat</tspan><tspan dy="-3"> 内容损失</tspan></text>
+          <text x="908" y="434" font-size="10.5" fill="#15803d" text-anchor="middle" font-family="JetBrains Mono">relu3_3</text>
         </g>
 
         <!-- ─── Backprop (only updates f_W) ─── -->
-        <path d="M908 480 C 908 514 700 520 472 520 C 360 520 272 520 272 358" fill="none" stroke="#be123c" stroke-width="2.2" stroke-dasharray="6 4" marker-end="url(#arrR)"/>
-        <text x="560" y="540" font-size="13.5" fill="#be123c" text-anchor="middle" font-family="Noto Sans SC" font-weight="700">梯度 ∇W：只回传更新 f_W，φ 全程冻结</text>
+        <path d="M908 446 C 908 466 690 470 472 470 C 350 470 272 470 272 352" fill="none" stroke="#be123c" stroke-width="2.2" stroke-dasharray="6 4" marker-end="url(#arrR)"/>
+        <text x="486" y="458" font-size="13.5" fill="#be123c" text-anchor="middle" font-family="Noto Sans SC" font-weight="700">梯度 ∇W：只回传更新 f_W，φ 全程冻结</text>
       </svg>
     </div>
 
@@ -843,7 +849,7 @@ table.deck tr.alt td.ours-best { background: #ffeef0; }
       <div class="callout" style="padding:14px 20px;">
         <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--blue); font-weight:800; letter-spacing:0.06em;">① 两张网，职责分明</div>
         <div style="font-size:18px; color:#334155; line-height:1.5; margin-top:4px;">
-          <strong>f_W</strong> 学着把 x 变成 ŷ；<strong>φ (VGG)</strong> 只负责"评分"，全程冻结。
+          <strong>f_W</strong> 学着把 x 变成 ŷ；<strong>φ (VGG)</strong> 只负责"评分"，是<strong>预训练的结果</strong>，全程冻结。
         </div>
       </div>
       <div class="callout green" style="padding:14px 20px;">
@@ -873,175 +879,200 @@ table.deck tr.alt td.ours-best { background: #ffeef0; }
   </div>
   <div class="accent-rule"></div>
 
-  <div style="padding:22px 80px 0; display:flex; flex-direction:column; gap:16px;">
+  <div style="padding:16px 80px 0; display:flex; flex-direction:column; gap:12px;">
 
-    <div class="callout dark" style="padding:14px 24px;">
-      <div style="font-size:21px; line-height:1.55;">
-        变换网络 f_W 是一个标准的<strong style="color:#fde68a;">全卷积深残差网络</strong>：先下采样、再多层 residual block、最后上采样。<strong style="color:#86efac;">全卷积</strong>意味着任意分辨率都能推理。
+    <div class="callout dark" style="padding:12px 22px;">
+      <div style="font-size:19px; line-height:1.5;">
+        变换网络 <strong style="color:#fde68a;">f_W</strong> 是全卷积深残差网络：<strong>两次 stride-2 下采样</strong>到 ¼ 分辨率 → 在 <strong style="color:#86efac;">64×64</strong> 上堆 <strong>5 个残差块</strong>做最重的计算 → <strong>两次 stride-½ 上采样</strong>还原。全卷积 ⇒ 任意分辨率都能推理。
       </div>
     </div>
 
-    <!-- Architecture diagram (style transfer variant) -->
-    <div class="figure-card" style="padding:18px 24px;">
-      <div class="tag" style="font-size:14px; margin-bottom:10px;">架构图 · 风格迁移版（输入 3×256×256，输出同尺寸）</div>
+    <!-- size flow -->
+    <div style="display:flex; flex-wrap:wrap; align-items:center; gap:7px 9px; background:#fff; border:1.5px solid var(--blue-pale); border-radius:10px; padding:9px 18px;">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--blue); font-weight:800; letter-spacing:0.1em; margin-right:4px;">尺寸流</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:15px; color:#0f2d52; font-weight:700;">3×256²</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--blue); font-weight:700;">→ ↓2 →</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:15px; color:#0f2d52; font-weight:700;">128²</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--blue); font-weight:700;">→ ↓2 →</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:15px; color:#0f2d52; font-weight:700;">64²</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:13.5px; color:#7c2d12; font-weight:700; background:#fff3e8; border:1px solid #f0a060; border-radius:6px; padding:2px 9px;">⟳ 5×RB · 128ch</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--green); font-weight:700;">→ ↑2 →</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:15px; color:#0f2d52; font-weight:700;">128²</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--green); font-weight:700;">→ ↑2 →</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:15px; color:#0f2d52; font-weight:700;">256²</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#94a3b8; font-weight:700;">→</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:15px; color:#0f2d52; font-weight:700;">3×256²</span>
+      <span style="font-size:12px; color:#64748b; margin-left:6px;">（↓2 蓝 · ↑2 绿，先缩后放对称）</span>
+    </div>
 
-      <svg viewBox="0 0 1200 200" style="width:100%; height:auto;">
+    <!-- Architecture diagram (style transfer variant) -->
+    <div class="figure-card" style="padding:14px 20px;">
+      <div class="tag" style="font-size:13.5px; margin-bottom:8px;">架构图 · 风格迁移版（输入/输出 3×256×256） · 方块高度≈空间分辨率，最重计算在 64²</div>
+
+      <svg viewBox="0 0 960 196" style="width:100%; height:auto;">
         <defs>
-          <marker id="arr9" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
-            <path d="M0,0 L8,4 L0,8" fill="none" stroke="#0f2d52" stroke-width="2"/>
-          </marker>
+          <marker id="arr9" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7" fill="none" stroke="#0f2d52" stroke-width="1.7"/></marker>
+          <marker id="arr9w" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7" fill="none" stroke="#fde68a" stroke-width="1.7"/></marker>
         </defs>
 
-        <!-- Input -->
-        <g transform="translate(10,60)">
-          <rect width="80" height="80" fill="#fde68a" stroke="#b45309" stroke-width="2" rx="4"/>
-          <text x="40" y="38" font-size="12" fill="#7c2d12" text-anchor="middle" font-family="JetBrains Mono" font-weight="700">3×256²</text>
-          <text x="40" y="54" font-size="11" fill="#7c2d12" text-anchor="middle" font-family="Noto Sans SC">输入</text>
+        <!-- Input 256² -->
+        <g font-family="JetBrains Mono">
+          <rect x="6" y="47" width="74" height="78" rx="4" fill="#fde68a" stroke="#b45309" stroke-width="2"/>
+          <text x="43" y="82" font-size="12" fill="#7c2d12" text-anchor="middle" font-weight="700">3×256²</text>
+          <text x="43" y="99" font-size="11" fill="#7c2d12" text-anchor="middle" font-family="Noto Sans SC">输入 x</text>
         </g>
-
-        <!-- Conv 9x9 -->
-        <g transform="translate(110,68)">
-          <rect width="80" height="64" fill="#1e5fa8" rx="4"/>
-          <text x="40" y="28" font-size="11" fill="#fff" text-anchor="middle" font-family="JetBrains Mono">9×9 conv</text>
-          <text x="40" y="44" font-size="10" fill="#fde68a" text-anchor="middle" font-family="JetBrains Mono">32 ch</text>
-          <text x="40" y="56" font-size="9" fill="#fff" text-anchor="middle" font-family="JetBrains Mono">stride 1</text>
+        <!-- 9×9 conv, stride 1 (no downsample) -->
+        <g font-family="JetBrains Mono">
+          <rect x="96" y="47" width="70" height="78" rx="4" fill="#1e5fa8"/>
+          <text x="131" y="78" font-size="11" fill="#fff" text-anchor="middle">9×9 conv</text>
+          <text x="131" y="93" font-size="10" fill="#fde68a" text-anchor="middle">32 ch</text>
+          <text x="131" y="107" font-size="8.5" fill="#cfe0f3" text-anchor="middle">stride 1·不降</text>
         </g>
-
-        <!-- Down 1 -->
-        <g transform="translate(210,72)">
-          <rect width="64" height="56" fill="#3b82c4" rx="4"/>
-          <text x="32" y="22" font-size="10" fill="#fff" text-anchor="middle" font-family="JetBrains Mono">3×3 conv</text>
-          <text x="32" y="36" font-size="10" fill="#fde68a" text-anchor="middle" font-family="JetBrains Mono">64 ch</text>
-          <text x="32" y="48" font-size="9" fill="#fff" text-anchor="middle" font-family="JetBrains Mono">↓2</text>
+        <!-- down1 → 128² -->
+        <g font-family="JetBrains Mono">
+          <rect x="182" y="57" width="60" height="58" rx="4" fill="#3b82c4"/>
+          <text x="212" y="80" font-size="10" fill="#fff" text-anchor="middle">3×3</text>
+          <text x="212" y="93" font-size="10" fill="#fde68a" text-anchor="middle">64 ch</text>
+          <text x="212" y="107" font-size="11" fill="#fff" text-anchor="middle" font-weight="700">↓2</text>
         </g>
-
-        <!-- Down 2 -->
-        <g transform="translate(290,76)">
-          <rect width="50" height="48" fill="#3b82c4" rx="4"/>
-          <text x="25" y="20" font-size="9" fill="#fff" text-anchor="middle" font-family="JetBrains Mono">3×3</text>
-          <text x="25" y="32" font-size="9" fill="#fde68a" text-anchor="middle" font-family="JetBrains Mono">128 ch</text>
-          <text x="25" y="42" font-size="9" fill="#fff" text-anchor="middle" font-family="JetBrains Mono">↓2</text>
+        <!-- down2 → 64² -->
+        <g font-family="JetBrains Mono">
+          <rect x="258" y="65" width="52" height="42" rx="4" fill="#3b82c4"/>
+          <text x="284" y="81" font-size="9" fill="#fff" text-anchor="middle">3×3</text>
+          <text x="284" y="92" font-size="9" fill="#fde68a" text-anchor="middle">128</text>
+          <text x="284" y="103" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">↓2</text>
         </g>
-
-        <!-- Residual blocks -->
-        <g transform="translate(355,40)">
-          <rect width="240" height="120" fill="#0f2d52" rx="8" stroke="#fde68a" stroke-width="2"/>
-          <text x="120" y="24" font-size="13" fill="#fff" text-anchor="middle" font-family="Noto Sans SC" font-weight="700">5 × Residual Block</text>
-          <!-- Tiny blocks -->
-          <g>
-            <rect x="20" y="40" width="36" height="60" fill="#3b82c4" rx="3"/>
-            <text x="38" y="64" font-size="9" fill="#fff" text-anchor="middle" font-family="JetBrains Mono">RB1</text>
-            <text x="38" y="76" font-size="8" fill="#fde68a" text-anchor="middle" font-family="JetBrains Mono">3×3</text>
-            <text x="38" y="88" font-size="8" fill="#fde68a" text-anchor="middle" font-family="JetBrains Mono">128</text>
-          </g>
-          <g><rect x="62" y="40" width="36" height="60" fill="#3b82c4" rx="3"/><text x="80" y="68" font-size="9" fill="#fff" text-anchor="middle" font-family="JetBrains Mono">RB2</text></g>
-          <g><rect x="104" y="40" width="36" height="60" fill="#3b82c4" rx="3"/><text x="122" y="68" font-size="9" fill="#fff" text-anchor="middle" font-family="JetBrains Mono">RB3</text></g>
-          <g><rect x="146" y="40" width="36" height="60" fill="#3b82c4" rx="3"/><text x="164" y="68" font-size="9" fill="#fff" text-anchor="middle" font-family="JetBrains Mono">RB4</text></g>
-          <g><rect x="188" y="40" width="36" height="60" fill="#3b82c4" rx="3"/><text x="206" y="68" font-size="9" fill="#fff" text-anchor="middle" font-family="JetBrains Mono">RB5</text></g>
-          <text x="120" y="116" font-size="10" fill="#fde68a" text-anchor="middle" font-family="JetBrains Mono">每块: conv3×3 + BN + ReLU + conv3×3 + BN, 残差跳连</text>
+        <!-- Residual body: one block expanded (skip every 2 conv) ×5 -->
+        <g font-family="JetBrains Mono">
+          <rect x="326" y="34" width="300" height="108" rx="8" fill="#0f2d52" stroke="#fde68a" stroke-width="2"/>
+          <text x="430" y="52" font-size="13" fill="#fff" text-anchor="middle" font-family="Noto Sans SC" font-weight="700">5 × Residual Block</text>
+          <text x="430" y="67" font-size="10.5" fill="#fde68a" text-anchor="middle">@ 64×64 · 128 ch</text>
+          <text x="601" y="50" font-size="13" fill="#fde68a" text-anchor="middle" font-weight="700">×5</text>
+          <circle cx="346" cy="112" r="3" fill="#fde68a"/>
+          <rect x="362" y="93" width="60" height="38" rx="3" fill="#3b82c4"/>
+          <text x="392" y="109" font-size="9" fill="#fff" text-anchor="middle">3×3 conv</text>
+          <text x="392" y="122" font-size="8" fill="#fde68a" text-anchor="middle">BN·ReLU</text>
+          <rect x="434" y="93" width="60" height="38" rx="3" fill="#3b82c4"/>
+          <text x="464" y="109" font-size="9" fill="#fff" text-anchor="middle">3×3 conv</text>
+          <text x="464" y="122" font-size="8" fill="#fde68a" text-anchor="middle">BN</text>
+          <circle cx="540" cy="112" r="12" fill="none" stroke="#fff" stroke-width="1.5"/>
+          <text x="540" y="117" font-size="15" fill="#fff" text-anchor="middle">+</text>
+          <line x1="349" y1="112" x2="360" y2="112" stroke="#fff" stroke-width="1.4" marker-end="url(#arr9w)"/>
+          <line x1="422" y1="112" x2="432" y2="112" stroke="#fff" stroke-width="1.4" marker-end="url(#arr9w)"/>
+          <line x1="494" y1="112" x2="526" y2="112" stroke="#fff" stroke-width="1.4" marker-end="url(#arr9w)"/>
+          <line x1="552" y1="112" x2="604" y2="112" stroke="#fff" stroke-width="1.4" marker-end="url(#arr9w)"/>
+          <path d="M346 112 C 346 80 540 80 540 100" fill="none" stroke="#fde68a" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr9w)"/>
+          <text x="443" y="76" font-size="9" fill="#fde68a" text-anchor="middle">跳连：每 2 个 conv 一次（+x）</text>
         </g>
-
-        <!-- Up 1 -->
-        <g transform="translate(610,76)">
-          <rect width="50" height="48" fill="#15803d" rx="4"/>
-          <text x="25" y="20" font-size="9" fill="#fff" text-anchor="middle" font-family="JetBrains Mono">conv½</text>
-          <text x="25" y="32" font-size="9" fill="#fde68a" text-anchor="middle" font-family="JetBrains Mono">64 ch</text>
-          <text x="25" y="42" font-size="9" fill="#fff" text-anchor="middle" font-family="JetBrains Mono">↑2</text>
+        <!-- up1 → 128² -->
+        <g font-family="JetBrains Mono">
+          <rect x="642" y="65" width="52" height="42" rx="4" fill="#15803d"/>
+          <text x="668" y="81" font-size="9" fill="#fff" text-anchor="middle">3×3 ½</text>
+          <text x="668" y="92" font-size="9" fill="#fde68a" text-anchor="middle">64</text>
+          <text x="668" y="103" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">↑2</text>
         </g>
-
-        <!-- Up 2 -->
-        <g transform="translate(675,72)">
-          <rect width="64" height="56" fill="#15803d" rx="4"/>
-          <text x="32" y="22" font-size="10" fill="#fff" text-anchor="middle" font-family="JetBrains Mono">conv½</text>
-          <text x="32" y="36" font-size="10" fill="#fde68a" text-anchor="middle" font-family="JetBrains Mono">32 ch</text>
-          <text x="32" y="48" font-size="9" fill="#fff" text-anchor="middle" font-family="JetBrains Mono">↑2</text>
+        <!-- up2 → 256² -->
+        <g font-family="JetBrains Mono">
+          <rect x="710" y="57" width="60" height="58" rx="4" fill="#15803d"/>
+          <text x="740" y="80" font-size="10" fill="#fff" text-anchor="middle">3×3 ½</text>
+          <text x="740" y="93" font-size="10" fill="#fde68a" text-anchor="middle">32 ch</text>
+          <text x="740" y="107" font-size="11" fill="#fff" text-anchor="middle" font-weight="700">↑2</text>
         </g>
-
-        <!-- 9x9 out -->
-        <g transform="translate(755,68)">
-          <rect width="80" height="64" fill="#1e5fa8" rx="4"/>
-          <text x="40" y="28" font-size="11" fill="#fff" text-anchor="middle" font-family="JetBrains Mono">9×9 conv</text>
-          <text x="40" y="44" font-size="10" fill="#fde68a" text-anchor="middle" font-family="JetBrains Mono">3 ch</text>
-          <text x="40" y="56" font-size="9" fill="#fff" text-anchor="middle" font-family="JetBrains Mono">scaled-tanh</text>
+        <!-- 9×9 out -->
+        <g font-family="JetBrains Mono">
+          <rect x="786" y="47" width="70" height="78" rx="4" fill="#1e5fa8"/>
+          <text x="821" y="78" font-size="11" fill="#fff" text-anchor="middle">9×9 conv</text>
+          <text x="821" y="93" font-size="10" fill="#fde68a" text-anchor="middle">3 ch</text>
+          <text x="821" y="107" font-size="8.5" fill="#cfe0f3" text-anchor="middle">scaled-tanh</text>
         </g>
-
-        <!-- Output -->
-        <g transform="translate(855,60)">
-          <rect width="80" height="80" fill="#dbeafe" stroke="#1e5fa8" stroke-width="2" rx="4"/>
-          <text x="40" y="38" font-size="12" fill="#0f2d52" text-anchor="middle" font-family="JetBrains Mono" font-weight="700">3×256²</text>
-          <text x="40" y="54" font-size="11" fill="#0f2d52" text-anchor="middle" font-family="Noto Sans SC">输出 ŷ</text>
+        <!-- output -->
+        <g font-family="JetBrains Mono">
+          <rect x="872" y="47" width="74" height="78" rx="4" fill="#dbeafe" stroke="#1e5fa8" stroke-width="2"/>
+          <text x="909" y="82" font-size="12" fill="#0f2d52" text-anchor="middle" font-weight="700">3×256²</text>
+          <text x="909" y="99" font-size="11" fill="#0f2d52" text-anchor="middle" font-family="Noto Sans SC">输出 ŷ</text>
         </g>
-
-        <!-- Arrows between -->
-        <line x1="90" y1="100" x2="106" y2="100" stroke="#0f2d52" stroke-width="1.5" marker-end="url(#arr9)"/>
-        <line x1="194" y1="100" x2="208" y2="100" stroke="#0f2d52" stroke-width="1.5" marker-end="url(#arr9)"/>
-        <line x1="278" y1="100" x2="288" y2="100" stroke="#0f2d52" stroke-width="1.5" marker-end="url(#arr9)"/>
-        <line x1="343" y1="100" x2="353" y2="100" stroke="#0f2d52" stroke-width="1.5" marker-end="url(#arr9)"/>
-        <line x1="597" y1="100" x2="608" y2="100" stroke="#0f2d52" stroke-width="1.5" marker-end="url(#arr9)"/>
-        <line x1="663" y1="100" x2="673" y2="100" stroke="#0f2d52" stroke-width="1.5" marker-end="url(#arr9)"/>
-        <line x1="741" y1="100" x2="753" y2="100" stroke="#0f2d52" stroke-width="1.5" marker-end="url(#arr9)"/>
-        <line x1="838" y1="100" x2="853" y2="100" stroke="#0f2d52" stroke-width="1.5" marker-end="url(#arr9)"/>
-
-        <!-- Region brackets: encoder, body, decoder -->
-        <text x="150" y="180" font-size="11" fill="#64748b" text-anchor="middle" font-family="JetBrains Mono" font-weight="700" letter-spacing="0.1em">ENCODER · 下采样</text>
-        <text x="475" y="180" font-size="11" fill="#64748b" text-anchor="middle" font-family="JetBrains Mono" font-weight="700" letter-spacing="0.1em">BODY · 主干（在低分辨率上做最重的计算）</text>
-        <text x="795" y="180" font-size="11" fill="#64748b" text-anchor="middle" font-family="JetBrains Mono" font-weight="700" letter-spacing="0.1em">DECODER · 上采样</text>
-
-        <!-- Note: SR variant -->
-        <g transform="translate(960,55)">
-          <rect width="225" height="90" fill="#fff3e8" stroke="#b45309" stroke-width="1.5" rx="6"/>
-          <text x="112" y="22" font-size="12" fill="#7c2d12" text-anchor="middle" font-family="JetBrains Mono" font-weight="700">SR 版本差异</text>
-          <text x="14" y="42" font-size="11" fill="#7c2d12" font-family="Noto Sans SC">• 不做下采样 (输入已是 LR)</text>
-          <text x="14" y="58" font-size="11" fill="#7c2d12" font-family="Noto Sans SC">• 末端 log₂f 个</text>
-          <text x="14" y="74" font-size="11" fill="#7c2d12" font-family="Noto Sans SC">  fractional-stride conv 放大</text>
+        <!-- flow arrows -->
+        <line x1="80" y1="86" x2="94" y2="86" stroke="#0f2d52" stroke-width="1.6" marker-end="url(#arr9)"/>
+        <line x1="166" y1="86" x2="180" y2="86" stroke="#0f2d52" stroke-width="1.6" marker-end="url(#arr9)"/>
+        <line x1="242" y1="86" x2="256" y2="86" stroke="#0f2d52" stroke-width="1.6" marker-end="url(#arr9)"/>
+        <line x1="310" y1="86" x2="324" y2="86" stroke="#0f2d52" stroke-width="1.6" marker-end="url(#arr9)"/>
+        <line x1="626" y1="86" x2="640" y2="86" stroke="#0f2d52" stroke-width="1.6" marker-end="url(#arr9)"/>
+        <line x1="694" y1="86" x2="708" y2="86" stroke="#0f2d52" stroke-width="1.6" marker-end="url(#arr9)"/>
+        <line x1="770" y1="86" x2="784" y2="86" stroke="#0f2d52" stroke-width="1.6" marker-end="url(#arr9)"/>
+        <line x1="856" y1="86" x2="870" y2="86" stroke="#0f2d52" stroke-width="1.6" marker-end="url(#arr9)"/>
+        <!-- spatial size track -->
+        <g font-family="JetBrains Mono" fill="#475569">
+          <text x="131" y="142" font-size="11" text-anchor="middle">256²</text>
+          <text x="212" y="142" font-size="11" text-anchor="middle">128²</text>
+          <text x="284" y="142" font-size="11" text-anchor="middle" fill="#b45309" font-weight="700">64²</text>
+          <text x="668" y="142" font-size="11" text-anchor="middle">128²</text>
+          <text x="740" y="142" font-size="11" text-anchor="middle">256²</text>
+          <text x="909" y="142" font-size="11" text-anchor="middle">256²</text>
+        </g>
+        <!-- region brackets -->
+        <g font-family="JetBrains Mono" fill="#64748b">
+          <line x1="6" y1="158" x2="310" y2="158" stroke="#cbd5e1" stroke-width="1"/>
+          <text x="158" y="174" font-size="10.5" text-anchor="middle" font-weight="700" letter-spacing="0.06em">ENCODER · 两次 ↓2</text>
+          <line x1="326" y1="158" x2="626" y2="158" stroke="#cbd5e1" stroke-width="1"/>
+          <text x="476" y="174" font-size="10.5" text-anchor="middle" font-weight="700" letter-spacing="0.06em">BODY · 64² 上最重计算</text>
+          <line x1="642" y1="158" x2="946" y2="158" stroke="#cbd5e1" stroke-width="1"/>
+          <text x="794" y="174" font-size="10.5" text-anchor="middle" font-weight="700" letter-spacing="0.06em">DECODER · 两次 ↑2</text>
         </g>
       </svg>
     </div>
 
-    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px;">
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;">
 
-      <div class="callout green" style="padding:14px 20px;">
-        <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--green); font-weight:800; letter-spacing:0.06em;">① 不要 Pooling · 改用 stride</div>
-        <div style="font-size:17px; color:#14532d; line-height:1.5; margin-top:4px;">
-          上下采样都用 <strong>fractional / strided conv</strong> 代替 pooling，让上下采样函数<strong>跟着任务一起被学</strong>。
+      <div class="callout green" style="padding:13px 18px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--green); font-weight:800; letter-spacing:0.05em;">① 不要 Pooling · 采样可学习</div>
+        <div style="font-size:14.5px; color:#14532d; line-height:1.45; margin-top:4px;">
+          上/下采样一律用 <strong>strided / fractionally-strided conv</strong> 取代 pooling，采样函数随任务一起被学。（可学习<strong>上</strong>采样的收益主要在超分，见 ⑦。）
         </div>
       </div>
 
-      <div class="callout" style="padding:14px 20px;">
-        <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--blue); font-weight:800; letter-spacing:0.06em;">② 中间下采样 · 计算便宜</div>
-        <div style="font-size:17px; color:#334155; line-height:1.5; margin-top:4px;">
-          在小尺寸上塞重网络 — D 倍下采样后参数同代价下<strong>感受野翻 D 倍</strong>，风格迁移需要大感受野。
+      <div class="callout" style="padding:13px 18px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--blue); font-weight:800; letter-spacing:0.05em;">② 中间下采样 · 两大硬核理由</div>
+        <div style="font-size:13.5px; color:#334155; line-height:1.45; margin-top:4px;">
+          <strong>同算力塞更大网</strong>：C×H×W 上做 C 个 3×3 conv ≡ DC×(H/D)×(W/D) 上做 DC 个，计算量相同。<br><strong>感受野 ×2D</strong>：降采样 D 倍后每个 3×3 conv 有效感受野扩大 2D — 风格迁移要大感受野。
         </div>
       </div>
 
-      <div class="callout warm" style="padding:14px 20px;">
-        <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--accent-dk); font-weight:800; letter-spacing:0.06em;">③ 残差连接 · 易学恒等</div>
-        <div style="font-size:17px; color:#7c2d12; line-height:1.5; margin-top:4px;">
-          He et al. 的 residual block — 让网络<strong>容易学到恒等</strong>，因为变换任务的输出大都和输入共享主体结构。
+      <div class="callout warm" style="padding:13px 18px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--accent-dk); font-weight:800; letter-spacing:0.05em;">③ 残差块 · 每 2 层一跳</div>
+        <div style="font-size:13.5px; color:#7c2d12; line-height:1.45; margin-top:4px;">
+          He et al. 的 residual block：<strong>跳连每 2 个 3×3 conv 一次</strong>（out = F(x)+x），易学恒等 — 变换输出与输入共享主体结构。Johnson 沿用，但<strong>去掉相加后的 ReLU</strong>。
         </div>
       </div>
 
-      <div class="callout purple" style="padding:14px 20px;">
-        <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--purple); font-weight:800; letter-spacing:0.06em;">④ 9×9 包头包尾</div>
-        <div style="font-size:17px; color:#4c1d95; line-height:1.5; margin-top:4px;">
-          首尾用 <strong>9×9 卷积</strong>更好融合 RGB / 输出，中间统一 <strong>3×3</strong> — VGG 哲学。
+      <div class="callout purple" style="padding:13px 18px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--purple); font-weight:800; letter-spacing:0.05em;">④ 9×9 包头包尾</div>
+        <div style="font-size:14.5px; color:#4c1d95; line-height:1.45; margin-top:4px;">
+          首尾用 <strong>9×9 conv</strong> 更好融合 RGB↔特征；中间统一 <strong>3×3</strong>（VGG 哲学，省参、堆深）。
         </div>
       </div>
 
-      <div class="callout rose" style="padding:14px 20px;">
-        <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--rose); font-weight:800; letter-spacing:0.06em;">⑤ 末层 scaled-tanh</div>
-        <div style="font-size:17px; color:#7f1d1d; line-height:1.5; margin-top:4px;">
-          强制输出在 <strong>[0, 255]</strong>，避免越界像素让训练发散 — 对比 Gatys 还要"投影裁剪"。
+      <div class="callout rose" style="padding:13px 18px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--rose); font-weight:800; letter-spacing:0.05em;">⑤ 末层 scaled-tanh</div>
+        <div style="font-size:14.5px; color:#7f1d1d; line-height:1.45; margin-top:4px;">
+          输出经 <strong>scaled-tanh</strong> 强制落在 <strong>[0,255]</strong>，避免越界像素让训练发散 — 对比 Gatys 还要手动投影裁剪。
         </div>
       </div>
 
-      <div class="callout dark" style="padding:14px 20px; color:#fff;">
-        <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:#fde68a; font-weight:800; letter-spacing:0.06em;">⑥ BN + ReLU</div>
-        <div style="font-size:17px; color:#fff; line-height:1.5; margin-top:4px;">
-          每个非残差 conv 后接 <strong>BN + ReLU</strong>，加速 / 稳定深网训练。
+      <div class="callout dark" style="padding:13px 18px; color:#fff;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#fde68a; font-weight:800; letter-spacing:0.05em;">⑥ BN + ReLU</div>
+        <div style="font-size:14.5px; color:#fff; line-height:1.45; margin-top:4px;">
+          每个<strong>非残差</strong> conv 后接 BN + ReLU，加速收敛、稳定深网训练。
         </div>
       </div>
 
+    </div>
+
+    <!-- SR variant demoted to a parallel branch note -->
+    <div class="callout warm" style="padding:11px 20px; border:1.6px dashed #c2853f;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--accent-dk); font-weight:800; letter-spacing:0.05em;">⑦ SR 分支 · 另一个任务的变体（≠ 上面主流程）</div>
+      <div style="font-size:14.5px; color:#7c2d12; line-height:1.45; margin-top:3px;">
+        超分输入已是低清，故<strong>不做下采样</strong>；主体同样是残差块；末端接 <strong>log₂f 个 stride-½ conv</strong> 把分辨率放大 f 倍。可学习上采样在此对比 [1] 的固定 bicubic 才是关键收益。
+      </div>
     </div>
 
   </div>
@@ -1057,42 +1088,37 @@ table.deck tr.alt td.ours-best { background: #ffeef0; }
   </div>
   <div class="accent-rule"></div>
 
-  <div style="padding:24px 80px 0; display:flex; flex-direction:column; gap:18px;">
+  <div style="padding:18px 80px 0; display:flex; flex-direction:column; gap:14px;">
 
-    <div class="callout dark" style="padding:16px 24px;">
-      <div style="font-size:22px; line-height:1.55;">
-        损失网络 φ 选用<strong style="color:#fde68a;">在 ImageNet 上预训练的 VGG-16</strong>，全程冻结。它的角色不是"做分类"，而是<strong style="color:#86efac;">把图像投影到一个"语义友好"的特征空间</strong>，让损失发生在这个空间里。
+    <div class="callout dark" style="padding:14px 24px;">
+      <div style="font-size:21px; line-height:1.5;">
+        损失网络 φ = <strong style="color:#fde68a;">在 ImageNet 上预训练的 16 层 VGG 网络</strong>，训练全程<strong style="color:#fde68a;">冻结</strong>。它的角色不是"做分类"，而是<strong style="color:#86efac;">把图像投影到一个学好的特征空间</strong> —— 让损失在那里发生，从而度量像素之外的<strong style="color:#86efac;">感知与语义差异</strong>。
       </div>
     </div>
 
-    <div style="display:grid; grid-template-columns:1.1fr 1fr; gap:24px;">
+    <div style="display:grid; grid-template-columns:1.32fr 1fr; gap:22px; align-items:stretch;">
 
-      <!-- Left: why VGG-16 -->
-      <div class="figure-card" style="padding:22px 28px;">
-        <div class="tag" style="font-size:16px; margin-bottom:14px;">为什么是 VGG-16 而不是其他网络？</div>
-
-        <ul class="bullet-list" style="font-size:20px;">
-          <li><strong style="color:var(--blue);">已学会"语义抽象"</strong> · ImageNet 1000 类训练 ⇒ 中层特征图自带<strong>"什么是边缘 / 纹理 / 物体局部"</strong>的先验。</li>
-          <li><strong style="color:var(--blue);">分层结构清晰</strong> · 越浅越像素，越深越语义；不同层提供不同粒度的"尺子"。</li>
-          <li><strong style="color:var(--blue);">全 3×3 卷积 + 5 段 pool</strong> · 结构规则，便于挑选 relu_j 层。</li>
-          <li><strong style="color:var(--blue);">与 Gatys[11] 一致</strong> · 沿用社区已验证的特征空间，便于公平对比。</li>
-        </ul>
-
-        <div style="margin-top:18px; padding:14px 18px; background:var(--blue-bg); border-radius:8px; font-size:19px; color:var(--navy); line-height:1.55;">
-          <strong>关键洞察：</strong>损失函数的"好坏"不是发明出来的 — 它<strong style="color:var(--blue);">从分类任务里"借"</strong>。一个能在 ImageNet 上做好分类的网络，它必然学到了"什么样的两张图在感知上像"。
+      <!-- Left: empirical evidence — Fig.3 -->
+      <div class="figure-card" style="padding:16px 20px; display:flex; flex-direction:column;">
+        <div class="tag purple" style="font-size:15px; margin-bottom:10px;">经验证据 · 逐层特征重建（论文 Fig. 3）</div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; background:#fff; border:1px solid var(--gray2); border-radius:8px; overflow:hidden;">
+          <img src="fig3.png" alt="论文 Fig.3：从 VGG-16 不同层（relu2_2…relu5_3）做特征重建的结果" style="width:100%; height:auto; display:block; object-fit:contain;">
+        </div>
+        <div style="margin-top:10px; font-size:16.5px; color:#475569; line-height:1.45;">
+          固定一层特征 φ<sub>j</sub>，让随机图反向优化去匹配它：<strong style="color:var(--navy);">浅层</strong>重建几乎与原图无异；<strong style="color:var(--navy);">越往深层，内容与空间结构被保留，但颜色、纹理、精确形状逐渐丢失</strong>。⇒ <strong style="color:var(--purple);">每一层都是一把不同粒度的"尺子"。</strong>
         </div>
       </div>
 
       <!-- Right: which layer for what -->
-      <div class="figure-card" style="padding:22px 28px;">
-        <div class="tag green" style="font-size:16px; margin-bottom:14px;">不同层 = 不同粒度的"尺子"</div>
+      <div class="figure-card" style="padding:18px 22px; display:flex; flex-direction:column;">
+        <div class="tag green" style="font-size:15px; margin-bottom:10px;">不同层 = 不同粒度的"尺子"</div>
 
-        <table class="data" style="font-size:18px;">
+        <table class="data" style="font-size:17px;">
           <thead>
             <tr>
               <th style="text-align:left;">VGG 层</th>
               <th>抓什么</th>
-              <th>用在哪</th>
+              <th>论文怎么用</th>
             </tr>
           </thead>
           <tbody>
@@ -1104,12 +1130,12 @@ table.deck tr.alt td.ours-best { background: #ffeef0; }
             <tr style="background:#f0f6ff;">
               <td class="lbl" style="color:var(--green); font-weight:800;">relu2_2 ★</td>
               <td>细节纹理</td>
-              <td style="color:var(--green); font-weight:800;">SR feat + style</td>
+              <td style="color:var(--green); font-weight:800;">SR 内容损失 + style</td>
             </tr>
             <tr>
               <td class="lbl" style="color:var(--green); font-weight:800;">relu3_3 ★</td>
               <td>局部结构</td>
-              <td style="color:var(--green); font-weight:800;">Style 内容损失</td>
+              <td style="color:var(--green); font-weight:800;">风格迁移内容损失 + style</td>
             </tr>
             <tr style="background:#f0f6ff;">
               <td class="lbl">relu4_3</td>
@@ -1117,26 +1143,33 @@ table.deck tr.alt td.ours-best { background: #ffeef0; }
               <td style="color:var(--purple);">style</td>
             </tr>
             <tr>
-              <td class="lbl">relu5_3</td>
+              <td class="lbl">relu5_1 / 5_3</td>
               <td>整体语义</td>
-              <td style="color:var(--gray4);">(过于抽象, 不用)</td>
+              <td style="color:var(--gray4);">(过抽象, 未采用)</td>
             </tr>
           </tbody>
         </table>
 
-        <div style="margin-top:16px; padding:12px 16px; background:var(--green-pale); border-radius:8px; font-size:18px; color:#14532d; line-height:1.55;">
-          <strong>★ 论文最终选择：</strong><br>
-          • 风格迁移 feature loss → <strong>relu3_3</strong><br>
-          • 风格迁移 style loss → <strong>relu1_2 / 2_2 / 3_3 / 4_3</strong> 之和<br>
-          • SR feature loss → <strong>relu2_2</strong>（更低层，保细节）
+        <div style="margin-top:14px; padding:12px 16px; background:var(--green-pale); border-radius:8px; font-size:16.5px; color:#14532d; line-height:1.5;">
+          <strong>★ 论文实验最终选择：</strong><br>
+          • 风格迁移 · 内容损失 → <strong>relu3_3</strong><br>
+          • 风格迁移 · 风格损失 → <strong>relu1_2 + 2_2 + 3_3 + 4_3</strong> 之和<br>
+          • 超分辨率 · 内容损失 → <strong>relu2_2</strong>（更低层，保细节、抑伪影）
         </div>
       </div>
 
     </div>
 
-    <div class="callout warm" style="padding:14px 24px;">
-      <div style="font-size:20px; line-height:1.55;">
-        <strong style="color:var(--accent-dk);">一个被忽视的细节：</strong>VGG 在训练 f_W 时<strong>全程冻结</strong> — 梯度只回传到 f_W 的权重 W，<strong>不更新 φ</strong>。这让"什么算感知相似"这件事变成了<strong>固定不变的先验</strong>，训练才能稳定。
+    <div style="display:grid; grid-template-columns:1.32fr 1fr; gap:22px;">
+      <div class="callout" style="padding:13px 20px;">
+        <div style="font-size:18px; line-height:1.5; color:#1e3a5f;">
+          <strong style="color:var(--blue);">关键洞察：</strong>好的损失函数不是"发明"的，而是<strong style="color:var(--blue);">从分类任务里"借"来</strong> —— 一个能在 ImageNet 上分好类的网络，必然已学到"两张图在感知上像不像"。这正是文中"借用预训练分类网络定义损失"的灵感来源（feature inversion 类工作 [7–11]）。
+        </div>
+      </div>
+      <div class="callout warm" style="padding:13px 20px;">
+        <div style="font-size:18px; line-height:1.5;">
+          <strong style="color:var(--accent-dk);">易被忽视：</strong>φ 全程冻结 —— 梯度只回传到 f<sub>W</sub> 的权重 W，<strong>不更新 φ</strong>。这把"何谓感知相似"固定成<strong>不变的先验</strong>，训练才稳定。
+        </div>
       </div>
     </div>
 
@@ -1186,31 +1219,29 @@ table.deck tr.alt td.ours-best { background: #ffeef0; }
         </div>
       </div>
 
-      <!-- Right: visual intuition -->
+      <!-- Right: layer choice + consequences -->
       <div style="display:flex; flex-direction:column; gap:14px;">
 
-        <div class="figure-card" style="padding:18px 22px;">
-          <div class="tag purple" style="font-size:14px; margin-bottom:10px;">直觉 · 用哪一层差异巨大（Fig. 3）</div>
-          <ul class="bullet-list" style="font-size:18px;">
-            <li><strong style="color:var(--purple);">浅层 (relu1_2 / 2_2)</strong> — 重建后<strong>像素几乎一致</strong>，因为浅层特征基本就是像素的小变换</li>
-            <li><strong style="color:var(--purple);">中层 (relu3_3 / 4_3)</strong> — 内容 / 空间结构保留，但<strong>颜色、纹理、精确形状丢失</strong></li>
-            <li><strong style="color:var(--purple);">深层 (relu5_1 / 5_3)</strong> — 只保留<strong>语义</strong>"这是只猫"，外观差很多</li>
-          </ul>
-        </div>
-
         <div class="callout green" style="padding:14px 20px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--green); font-weight:800; letter-spacing:0.06em;">★ 选层 = 选"放手程度"</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--green); font-weight:800; letter-spacing:0.06em;">★ 选层 j = 选"放手程度"</div>
           <div style="font-size:18px; color:#14532d; line-height:1.55; margin-top:4px;">
-            • 风格迁移要"换皮不换身" ⇒ 用<strong>中层</strong> relu3_3<br>
-            • SR 要"还原细节" ⇒ 用<strong>较浅</strong> relu2_2<br>
-            • 选得越深，输出越"放飞"
+            上一页 Fig. 3 已直观说明后果：<strong>层越深，输出越"放飞"</strong>。<br>
+            • 风格迁移要"换皮不换身" ⇒ 取中层 <strong>relu3_3</strong><br>
+            • 超分要"还原真实细节" ⇒ 取较浅 <strong>relu2_2</strong>
           </div>
         </div>
 
         <div class="callout warm" style="padding:14px 20px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--accent-dk); font-weight:800; letter-spacing:0.06em;">⚠ 副作用</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--accent-dk); font-weight:800; letter-spacing:0.06em;">⚠ 副作用 · 网格状伪影</div>
           <div style="font-size:17px; color:#7c2d12; line-height:1.55; margin-top:4px;">
-            特征损失输出有<strong>"棋盘状"伪影</strong>（论文承认），层选得越深越严重 — 这是 SR 用 relu2_2 而非更深层的原因。
+            论文观察到：feat 模型输出在像素级出现<strong>网格状伪影</strong>，放大 Fig. 3 也能看到同样痕迹 —— 说明这<strong>源于特征重建损失本身，而非网络结构</strong>。层越深越明显，这正是超分选用 <strong>relu2_2</strong> 的直接动因。
+          </div>
+        </div>
+
+        <div class="callout" style="padding:14px 20px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--blue); font-weight:800; letter-spacing:0.06em;">↳ 归一化的意义</div>
+          <div style="font-size:17px; color:#1e3a5f; line-height:1.55; margin-top:4px;">
+            除以 $C_j H_j W_j$ 让不同层、不同尺寸特征图的损失落到<strong>同一量纲</strong>，多项加权时权重 λ 才好调。
           </div>
         </div>
 
@@ -1221,9 +1252,9 @@ table.deck tr.alt td.ours-best { background: #ffeef0; }
     <!-- 与 inversion 的关系 -->
     <div class="figure-card" style="padding:18px 26px;">
       <div style="display:flex; align-items:center; gap:18px;">
-        <span class="tag" style="font-size:16px;">理论根源 · 来自特征反演[Mahendran '15]</span>
+        <span class="tag" style="font-size:16px;">理论根源 · 特征反演 [7] Mahendran &amp; Vedaldi '15</span>
         <div style="flex:1; font-size:19px; color:#334155; line-height:1.6;">
-          Mahendran 让一张噪声图<strong>反向优化</strong>到"在某层 VGG 特征上"匹配目标图，结果发现可以恢复出视觉相似的图。<strong style="color:var(--navy);">本文反其道而行：</strong>不优化图，而是<strong style="color:var(--blue);">训练一个网络去快速产生这种图</strong>。
+          [7] 让一张噪声图<strong>反向优化</strong>，直到它在某层 VGG 特征上匹配目标图，借此说明 CNN 各层"还保留了哪些可视信息"。<strong style="color:var(--navy);">本文反其道而行：</strong>不再对每张图慢优化，而是<strong style="color:var(--blue);">训练一个前馈网络 f<sub>W</sub> 去一次性产生这种图</strong> —— 把"慢优化"蒸馏成"快前向"。
         </div>
       </div>
     </div>
@@ -1241,123 +1272,119 @@ table.deck tr.alt td.ours-best { background: #ffeef0; }
   </div>
   <div class="accent-rule"></div>
 
-  <div style="padding:20px 80px 0; display:flex; flex-direction:column; gap:14px;">
+  <div style="padding:16px 80px 0; display:flex; flex-direction:column; gap:12px;">
 
-    <div class="callout dark" style="padding:14px 24px;">
-      <div style="font-size:20px; line-height:1.55;">
-        Feature loss 抓"是什么内容"，但<strong style="color:#fde68a;">没法抓颜色 / 纹理 / 笔触</strong>。Gatys 的解法：把特征图变成 <strong style="color:#86efac;">Gram 矩阵</strong> — 一个<strong>抛弃空间位置、只保留"通道间共激活统计"</strong>的描述子。
+    <div class="callout dark" style="padding:13px 24px;">
+      <div style="font-size:20px; line-height:1.5;">
+        Feature loss 管"是什么内容"，却<strong style="color:#fde68a;">抓不住颜色 / 纹理 / 笔触</strong>。Gatys 的解法：把特征图变成 <strong style="color:#86efac;">Gram 矩阵</strong> —— 一个<strong>抛弃空间位置、只保留"通道间共激活统计"</strong>的描述子。
       </div>
     </div>
 
-    <div style="display:grid; grid-template-columns:1.15fr 1fr; gap:20px;">
+    <div style="display:grid; grid-template-columns:1.18fr 1fr; gap:20px; align-items:stretch;">
 
-      <!-- Left: Gram matrix construction + formula -->
-      <div class="figure-card" style="padding:18px 24px;">
-        <div class="tag purple" style="font-size:15px; margin-bottom:10px;">Gram 矩阵 · 怎么构造</div>
+      <!-- Left: Gram matrix construction (ported from perceptual-loss-lineage 放大镜 C) + formula -->
+      <div class="figure-card" style="padding:16px 22px; display:flex; flex-direction:column;">
+        <div class="tag purple" style="font-size:15px; margin-bottom:8px;">Gram 矩阵 · 怎么构造（拉平 → 点积 → 填表）</div>
 
-        <!-- Visual transformation -->
-        <svg viewBox="0 0 540 130" style="width:100%; height:auto; margin-bottom:10px;">
-          <defs>
-            <marker id="arr12" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
-              <path d="M0,0 L8,4 L0,8" fill="none" stroke="#0f2d52" stroke-width="2"/>
-            </marker>
-          </defs>
-
-          <!-- Feature map -->
-          <g transform="translate(10,20)">
-            <rect width="100" height="90" fill="#dbeafe" stroke="#1e5fa8" stroke-width="1.5" rx="4"/>
-            <text x="50" y="38" font-size="12" fill="#0f2d52" text-anchor="middle" font-family="JetBrains Mono">φ_j(x)</text>
-            <text x="50" y="56" font-size="11" fill="#0f2d52" text-anchor="middle" font-family="JetBrains Mono">C × H × W</text>
-            <text x="50" y="74" font-size="10" fill="#64748b" text-anchor="middle" font-family="Noto Sans SC">特征图</text>
-          </g>
-
-          <line x1="115" y1="65" x2="140" y2="65" stroke="#0f2d52" stroke-width="2" marker-end="url(#arr12)"/>
-          <text x="127" y="58" font-size="9" fill="#64748b" text-anchor="middle" font-family="JetBrains Mono">reshape</text>
-
-          <!-- Reshape to ψ -->
-          <g transform="translate(146,28)">
-            <rect width="40" height="74" fill="#fde68a" stroke="#b45309" stroke-width="1.5" rx="4"/>
-            <text x="20" y="32" font-size="11" fill="#7c2d12" text-anchor="middle" font-family="JetBrains Mono">ψ</text>
-            <text x="20" y="48" font-size="10" fill="#7c2d12" text-anchor="middle" font-family="JetBrains Mono">C</text>
-            <text x="20" y="62" font-size="9" fill="#7c2d12" text-anchor="middle" font-family="JetBrains Mono">× HW</text>
-          </g>
-
-          <line x1="190" y1="65" x2="218" y2="65" stroke="#0f2d52" stroke-width="2" marker-end="url(#arr12)"/>
-          <text x="204" y="58" font-size="9" fill="#64748b" text-anchor="middle" font-family="JetBrains Mono">ψ ψᵀ / CHW</text>
-
-          <!-- Gram -->
-          <g transform="translate(224,20)">
-            <rect width="90" height="90" fill="#ede9fe" stroke="#6d28d9" stroke-width="2" rx="4"/>
-            <text x="45" y="32" font-size="12" fill="#4c1d95" text-anchor="middle" font-family="JetBrains Mono" font-weight="700">G_j^φ(x)</text>
-            <text x="45" y="50" font-size="11" fill="#4c1d95" text-anchor="middle" font-family="JetBrains Mono">C × C</text>
-            <text x="45" y="68" font-size="10" fill="#4c1d95" text-anchor="middle" font-family="Noto Sans SC">通道协方差</text>
-            <text x="45" y="82" font-size="10" fill="#4c1d95" text-anchor="middle" font-family="Noto Sans SC">★ 无空间</text>
-          </g>
-
-          <!-- Big bracket: ŷ vs y -->
-          <text x="345" y="22" font-size="11" fill="#0f2d52" font-family="Noto Sans SC" font-weight="700">对 ŷ 和 y 各算一次：</text>
-
-          <g transform="translate(345,32)">
-            <rect width="60" height="32" fill="#dbeafe" stroke="#1e5fa8" stroke-width="1.2" rx="3"/>
-            <text x="30" y="20" font-size="11" fill="#0f2d52" text-anchor="middle" font-family="JetBrains Mono">G(ŷ)</text>
-          </g>
-          <text x="412" y="52" font-size="13" fill="#be123c" font-family="JetBrains Mono">−</text>
-          <g transform="translate(425,32)">
-            <rect width="60" height="32" fill="#dcfce7" stroke="#15803d" stroke-width="1.2" rx="3"/>
-            <text x="30" y="20" font-size="11" fill="#14532d" text-anchor="middle" font-family="JetBrains Mono">G(y)</text>
-          </g>
-
-          <text x="345" y="86" font-size="11" fill="#0f2d52" font-family="Noto Sans SC">Frobenius ‖·‖²_F:</text>
-          <g transform="translate(345,92)">
-            <rect width="140" height="28" fill="#fff" stroke="#0f2d52" stroke-width="1.2" rx="3"/>
-            <text x="70" y="19" font-size="11" fill="#0f2d52" text-anchor="middle" font-family="JetBrains Mono">‖G(ŷ) − G(y)‖²_F</text>
-          </g>
+        <svg id="gramSvg" viewBox="0 0 680 384" role="img" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; max-height:430px;">
+          <style>
+            #gramSvg text{font-family:'Noto Serif SC',serif}
+            #gramSvg .ts{font-size:12px;fill:#4A453B}
+            #gramSvg .th{font-size:14px;font-weight:500;fill:#23201A}
+          </style>
+          <title>Gram 矩阵与风格损失的计算步骤</title>
+          <desc>从特征体取出两个通道各自拉平成向量做点积，填入C×C的Gram矩阵；点积对所有空间位置求和，丢掉位置信息，只保留通道间共现统计，这就是风格。</desc>
+          <defs><marker id="ar3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+          <rect x="40" y="92" width="80" height="80" rx="6" fill="#E1F0EA" stroke="#1E8268" stroke-width="1"/>
+          <text class="th" x="80" y="190" text-anchor="middle">特征体 φⱼ</text>
+          <text class="ts" x="80" y="208" text-anchor="middle" style="fill:#5F5E5A">Cⱼ 个通道</text>
+          <text class="th" x="182" y="50" text-anchor="middle">通道 c</text>
+          <rect x="158" y="58" width="48" height="48" rx="3" fill="#ECE9FB" stroke="#6B5DD3" stroke-width="1"/>
+          <line x1="174" y1="58" x2="174" y2="106" stroke="#6B5DD3" stroke-width="0.5" opacity="0.5"/>
+          <line x1="190" y1="58" x2="190" y2="106" stroke="#6B5DD3" stroke-width="0.5" opacity="0.5"/>
+          <line x1="158" y1="74" x2="206" y2="74" stroke="#6B5DD3" stroke-width="0.5" opacity="0.5"/>
+          <line x1="158" y1="90" x2="206" y2="90" stroke="#6B5DD3" stroke-width="0.5" opacity="0.5"/>
+          <rect x="158" y="150" width="48" height="48" rx="3" fill="#FAEEDA" stroke="#BA7517" stroke-width="1"/>
+          <line x1="174" y1="150" x2="174" y2="198" stroke="#BA7517" stroke-width="0.5" opacity="0.5"/>
+          <line x1="190" y1="150" x2="190" y2="198" stroke="#BA7517" stroke-width="0.5" opacity="0.5"/>
+          <line x1="158" y1="166" x2="206" y2="166" stroke="#BA7517" stroke-width="0.5" opacity="0.5"/>
+          <line x1="158" y1="182" x2="206" y2="182" stroke="#BA7517" stroke-width="0.5" opacity="0.5"/>
+          <text class="th" x="182" y="216" text-anchor="middle">通道 c'</text>
+          <rect x="240" y="72" width="117" height="18" rx="3" fill="#ECE9FB" stroke="#6B5DD3" stroke-width="1"/>
+          <rect x="240" y="156" width="117" height="18" rx="3" fill="#FAEEDA" stroke="#BA7517" stroke-width="1"/>
+          <text class="ts" x="298" y="128" text-anchor="middle" style="fill:#5F5E5A">拉平成向量（长 Hⱼ·Wⱼ）</text>
+          <rect x="398" y="84" width="120" height="74" rx="8" fill="#F7E7DD" stroke="#C0532A" stroke-width="1"/>
+          <text class="th" x="458" y="106" text-anchor="middle" dominant-baseline="central">点积</text>
+          <text class="ts" x="458" y="126" text-anchor="middle" dominant-baseline="central">对应相乘</text>
+          <text class="ts" x="458" y="142" text-anchor="middle" dominant-baseline="central">后全部求和</text>
+          <rect x="556" y="99" width="84" height="44" rx="8" fill="#E2EDF7" stroke="#1C5C96" stroke-width="1"/>
+          <text class="th" x="598" y="121" text-anchor="middle" dominant-baseline="central">G[c, c']</text>
+          <line x1="120" y1="118" x2="156" y2="82" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ar3)"/>
+          <line x1="120" y1="148" x2="156" y2="174" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ar3)"/>
+          <line x1="206" y1="82" x2="238" y2="81" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ar3)"/>
+          <line x1="206" y1="174" x2="238" y2="165" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ar3)"/>
+          <path d="M357 81 L 378 81 L 378 108 L 398 108" fill="none" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ar3)"/>
+          <path d="M357 165 L 378 165 L 378 134 L 398 134" fill="none" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ar3)"/>
+          <line x1="518" y1="121" x2="556" y2="121" stroke="#7C7565" stroke-width="1.5" marker-end="url(#ar3)"/>
+          <line x1="40" y1="238" x2="640" y2="238" stroke="#D8CFBC" stroke-width="0.5"/>
+          <text class="th" x="530" y="258" text-anchor="middle">Gram 矩阵 Cⱼ×Cⱼ</text>
+          <rect x="470" y="266" width="120" height="100" rx="4" fill="#F1EFE8" stroke="#888780" stroke-width="1"/>
+          <rect x="494" y="266" width="24" height="20" fill="#F0997B" stroke="#C0532A" stroke-width="0.8"/>
+          <line x1="494" y1="266" x2="494" y2="366" stroke="#888780" stroke-width="0.5" opacity="0.5"/>
+          <line x1="518" y1="266" x2="518" y2="366" stroke="#888780" stroke-width="0.5" opacity="0.5"/>
+          <line x1="542" y1="266" x2="542" y2="366" stroke="#888780" stroke-width="0.5" opacity="0.5"/>
+          <line x1="566" y1="266" x2="566" y2="366" stroke="#888780" stroke-width="0.5" opacity="0.5"/>
+          <line x1="470" y1="286" x2="590" y2="286" stroke="#888780" stroke-width="0.5" opacity="0.5"/>
+          <line x1="470" y1="306" x2="590" y2="306" stroke="#888780" stroke-width="0.5" opacity="0.5"/>
+          <line x1="470" y1="326" x2="590" y2="326" stroke="#888780" stroke-width="0.5" opacity="0.5"/>
+          <line x1="470" y1="346" x2="590" y2="346" stroke="#888780" stroke-width="0.5" opacity="0.5"/>
+          <path d="M598 143 L 598 200 L 506 200 L 506 264" fill="none" stroke="#1C5C96" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ar3)"/>
+          <text class="ts" x="612" y="186" text-anchor="end" style="fill:#0C447C">每对都算一次，填满整张表</text>
+          <rect x="40" y="252" width="350" height="116" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="1" stroke-dasharray="5 4"/>
+          <text class="th" x="58" y="276">为什么它代表「风格」</text>
+          <text class="ts" x="58" y="300">点积把所有空间位置 (h,w) 的激活加总——</text>
+          <text class="ts" x="58" y="320">「出现在哪」被丢掉，只剩「哪些通道</text>
+          <text class="ts" x="58" y="340">总爱一起激活」。这正是纹理 / 笔触 / 配色的</text>
+          <text class="ts" x="58" y="360">统计，与画面布局无关。</text>
         </svg>
 
-        <div class="formula-box" style="font-size:20px; padding:14px 20px;">
+        <div class="formula-box" style="font-size:19px; padding:12px 20px; margin-top:8px;">
           $$G^{\phi}_j(x)_{c,c'} = \frac{1}{C_j H_j W_j} \sum_{h,w} \phi_j(x)_{h,w,c}\,\phi_j(x)_{h,w,c'}$$
-          $$\ell^{\phi,j}_{style}(\hat y, y) = \bigl\lVert G^{\phi}_j(\hat y) - G^{\phi}_j(y) \bigr\rVert_F^2$$
-          <div style="font-size:14px; color:var(--gray4); margin-top:8px; line-height:1.6; font-family:'Noto Sans SC',sans-serif;">
-            从多层求和：$\ell^{\phi,J}_{style} = \sum_{j\in J}\ell^{\phi,j}_{style}$
-          </div>
+          $$\ell^{\phi,j}_{style}(\hat y, y) = \bigl\lVert G^{\phi}_j(\hat y) - G^{\phi}_j(y) \bigr\rVert_F^2 \qquad \ell^{\phi,J}_{style} = \sum_{j\in J}\ell^{\phi,j}_{style}$$
         </div>
       </div>
 
-      <!-- Right: intuitions -->
-      <div style="display:flex; flex-direction:column; gap:12px;">
+      <!-- Right: evidence (Fig.4) + intuitions -->
+      <div style="display:flex; flex-direction:column; gap:11px;">
 
-        <div class="callout" style="padding:13px 18px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--blue); font-weight:800; letter-spacing:0.06em;">① 抛掉空间，只留统计</div>
-          <div style="font-size:17px; color:#334155; line-height:1.55; margin-top:4px;">
-            把 $C × H × W$ reshape 成 $C × HW$，每个位置当一个"样本"。<strong>每个空间位置去哪了不重要</strong>，重要的是<strong>哪些通道总是一起亮</strong>。
+        <div class="figure-card" style="padding:13px 16px;">
+          <div class="tag green" style="font-size:14px; margin-bottom:8px;">经验证据 · 逐层风格重建（论文 Fig. 4）</div>
+          <div style="display:flex; align-items:center; justify-content:center; background:#fff; border:1px solid var(--gray2); border-radius:8px; overflow:hidden;">
+            <img src="fig4.png" alt="论文 Fig.4：从 VGG-16 不同层（relu1_2…relu4_3）做风格重建的结果" style="width:100%; height:auto; display:block; object-fit:contain;">
+          </div>
+          <div style="margin-top:8px; font-size:15.5px; color:#475569; line-height:1.4;">
+            只约束 Gram 反向重建：<strong style="color:var(--navy);">风格特征（颜色/纹理/笔触）被保留，空间结构被丢弃</strong>；从更高层重建则迁移<strong>更大尺度</strong>的结构。
           </div>
         </div>
 
-        <div class="callout purple" style="padding:13px 18px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--purple); font-weight:800; letter-spacing:0.06em;">② 通道协方差 = 纹理签名</div>
-          <div style="font-size:17px; color:#4c1d95; line-height:1.55; margin-top:4px;">
-            "红色 + 圆形"通道<strong>总是一起亮</strong> ⇒ Gram[red, round] 很大 ⇒ 网络认为"图里到处有红色圆点"。这就是<strong style="color:var(--purple);">风格 / 纹理的数学定义</strong>。
+        <div class="callout purple" style="padding:11px 16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--purple); font-weight:800; letter-spacing:0.05em;">① 通道协方差 = 纹理签名</div>
+          <div style="font-size:16px; color:#4c1d95; line-height:1.45; margin-top:3px;">
+            "哪些通道总是一起亮"被放大成大值 ⇒ 把笔触、配色、纹理变成<strong>可优化的统计量</strong>，与"画在哪"无关。
           </div>
         </div>
 
-        <div class="callout green" style="padding:13px 18px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--green); font-weight:800; letter-spacing:0.06em;">③ 多尺度求和</div>
-          <div style="font-size:17px; color:#14532d; line-height:1.55; margin-top:4px;">
-            不同层 = 不同尺度的纹理。<strong>relu1_2 抓笔触</strong>，<strong>relu4_3 抓大色块组织</strong>。论文用 1_2/2_2/3_3/4_3 四层之和。
+        <div class="callout warm" style="padding:11px 16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--accent-dk); font-weight:800; letter-spacing:0.05em;">② 尺寸无关 · 多尺度求和</div>
+          <div style="font-size:16px; color:#7c2d12; line-height:1.45; margin-top:3px;">
+            G 是 $C_j\times C_j$，<strong>与图像尺寸无关</strong> —— 256² 训练可在更高分辨率推理；多层（1_2/2_2/3_3/4_3）求和覆盖不同尺度纹理。
           </div>
         </div>
 
-        <div class="callout warm" style="padding:13px 18px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--accent-dk); font-weight:800; letter-spacing:0.06em;">④ 尺寸无关</div>
-          <div style="font-size:17px; color:#7c2d12; line-height:1.55; margin-top:4px;">
-            G 是 $C × C$，<strong>不依赖图像尺寸</strong>。所以 256² 训练的模型可以在 512² / 1024² 上推理（论文 Fig. 7 用此特性）。
-          </div>
-        </div>
-
-        <div class="callout rose" style="padding:13px 18px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--rose); font-weight:800; letter-spacing:0.06em;">★ 风格迁移 = feat + style</div>
-          <div style="font-size:17px; color:#7f1d1d; line-height:1.55; margin-top:4px;">
-            <strong>内容</strong>用 feat loss 锚住，<strong>风格</strong>用 style loss 替换 — 这就是风格迁移目标函数的全部。
+        <div class="callout rose" style="padding:11px 16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--rose); font-weight:800; letter-spacing:0.05em;">★ 风格迁移 = feat + style</div>
+          <div style="font-size:16px; color:#7f1d1d; line-height:1.45; margin-top:3px;">
+            <strong>内容</strong>由 feat loss 锚住，<strong>风格</strong>由 style loss 替换 —— 两项相加即风格迁移目标的主体（详见下页）。
           </div>
         </div>
 
@@ -1397,11 +1424,11 @@ table.deck tr.alt td.ours-best { background: #ffeef0; }
         </div>
 
         <div style="margin-top:18px; font-size:19px; color:#334155; line-height:1.65;">
-          就是<strong style="color:var(--rose);">老朋友 L2</strong>。<strong>能用的前提</strong>：必须有逐像素对齐的 ground truth — 也就是说，<strong>只能用在 SR 这种有真值的任务上</strong>，风格迁移没有"标准答案"，不能用。
+          就是<strong style="color:var(--rose);">老朋友 L2</strong>。<strong>能用的前提</strong>：必须有逐像素对齐的 ground truth —— 也就是说，<strong>只能用在超分这种有真值的任务上</strong>，风格迁移没有"标准答案"，无法使用。
         </div>
 
         <div style="margin-top:14px; padding:12px 18px; background:var(--rose-pale); border-radius:8px; font-size:17px; color:#7f1d1d; line-height:1.55;">
-          <strong>论文用它的两个角色：</strong>① 作为 SR 实验的 <strong style="color:var(--rose);">baseline</strong>（与 ℓ_feat 对比）；② 不作为主损失使用。
+          <strong>论文中的角色：</strong>仅作为超分实验的 <strong style="color:var(--rose);">对照基线</strong>（ℓ<sub>pixel</sub> vs. ℓ<sub>feat</sub>），<strong>不充当最终模型的主损失</strong>。<br><strong>一个关键论点：</strong>PSNR 本质等价于 ℓ<sub>pixel</sub>，因此用 PSNR 评测天然偏袒像素损失模型 —— 这正是论文强调"别只看 PSNR"的原因。
         </div>
       </div>
 
@@ -1418,7 +1445,7 @@ table.deck tr.alt td.ours-best { background: #ffeef0; }
         </div>
 
         <div style="margin-top:14px; padding:12px 18px; background:var(--accent-pale); border-radius:8px; font-size:17px; color:#7c2d12; line-height:1.55;">
-          <strong>论文设置：</strong>风格迁移 TV 权重 $\lambda_{TV} \in [10^{-6}, 10^{-4}]$，<strong>每种风格图交叉验证选一个</strong>。SR 实验中也保留一个小 TV 项。
+          <strong>来历：</strong>沿用特征反演 [7,22] 与超分 [53,54] 的先例引入。<br><strong>论文设置：</strong>风格迁移取 $\lambda_{TV} \in [10^{-6},\,10^{-4}]$，<strong>按每张风格图交叉验证</strong>各选一个值。
         </div>
       </div>
 
@@ -1455,8 +1482,8 @@ table.deck tr.alt td.ours-best { background: #ffeef0; }
 
       <div style="margin-top:16px; padding:14px 18px; background:rgba(253,230,138,0.12); border-radius:8px; font-size:18px; color:#fff; line-height:1.55;">
         <strong style="color:#fde68a;">两个任务的不同配方：</strong><br>
-        • <strong>风格迁移</strong> = ℓ_feat(ŷ, y_c) + ℓ_style(ŷ, y_s) + ℓ_TV — <strong>不用 pixel loss</strong>（没真值）<br>
-        • <strong>超分辨率</strong> = ℓ_feat(ŷ, y_HR) + ℓ_TV — <strong>不用 style loss</strong>（不需要换风格）
+        • <strong>风格迁移</strong> = λ<sub>c</sub>·ℓ<sub>feat</sub>(ŷ, y<sub>c</sub>) + λ<sub>s</sub>·ℓ<sub>style</sub>(ŷ, y<sub>s</sub>) + λ<sub>TV</sub>·ℓ<sub>TV</sub> — <strong>不用 pixel loss</strong>（无真值，内容靶 y<sub>c</sub> 即输入图）<br>
+        • <strong>超分辨率</strong> = ℓ<sub>feat</sub>(ŷ, y<sub>HR</sub>)（取 relu2_2）— <strong>不用 style loss</strong>（无需换风格）
       </div>
     </div>
 
